@@ -16,6 +16,6 @@ data class AccountInfo(
     val currentBalance: Double,
     val typeDrawdown: DrawnDownTypes,
     val maxDrawdownAmmount: Double,
-    val dailyLossLimit: Double,
+    val dailyLossLimit: Double? = null,
     val rulesPropFirm: List<AccountRules>
 )
