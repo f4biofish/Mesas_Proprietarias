@@ -11,6 +11,7 @@ composeBom = "2024.09.00"
 room = "2.6.1"
 ksp = "2.0.21-1.0.26"
 hilt = "2.52"
+gson = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,7 +34,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
-
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

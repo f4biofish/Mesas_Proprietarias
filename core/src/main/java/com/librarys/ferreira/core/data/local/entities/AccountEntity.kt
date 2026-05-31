@@ -11,10 +11,12 @@ data class AccountEntity(
     val numberAccount: String,
     val propFirm: String,
     val accountName: String,
+    val dayStarting: Long = System.currentTimeMillis(),
+    val dayBroken: Long? = null,
     val initialBalance: Double,
     val currentBalance: Double,
+    val typeDrawdown: String,
     val maxDrawdownAmmount: Double,
     val dailyLossLimit: Double? = null,
-    val dayStarting: Long = System.currentTimeMillis(),
-    val dayBroken: Long? = null
+    val rulesPropFirm: List<String>
 )
