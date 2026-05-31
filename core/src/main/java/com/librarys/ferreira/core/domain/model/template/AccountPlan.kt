@@ -37,8 +37,9 @@ data class AccountPlan(
 /**
  * Converte a classe de [AccountPlan] para a classe [AccountPropFirm.Challenge]
  */
-fun AccountPlan.toAccountPropFirmChallenge() = AccountPropFirm.Challenge(
+fun AccountPlan.toAccountPropFirmChallenge(numberAccount: String) = AccountPropFirm.Challenge(
     info = AccountInfo(
+        numberAccount = numberAccount,
         propFirm = this.propFirm,
         accountName = this.name,
         initialBalance = this.initialBalance,
@@ -54,8 +55,9 @@ fun AccountPlan.toAccountPropFirmChallenge() = AccountPropFirm.Challenge(
 /**
  * Converte a classe de [AccountPlan] para [AccountPropFirm.Funded]
  */
-fun AccountPlan.toAccountPropFirmFunded() = AccountPropFirm.Funded(
+fun AccountPlan.toAccountPropFirmFunded(numberAccount: String) = AccountPropFirm.Funded(
     info = AccountInfo(
+        numberAccount = numberAccount,
         propFirm = this.propFirm,
         accountName = this.name,
         initialBalance = this.initialBalance,
