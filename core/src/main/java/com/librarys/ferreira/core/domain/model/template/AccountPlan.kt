@@ -20,7 +20,7 @@ import com.librarys.ferreira.core.domain.model.rules.AccountRules
  * @property rulesChallenge Regras da mesa na fase de avaliação
  * @property rulesFunded Regras da mesa na fase financiada
  */
-data class AccountTemplate(
+data class AccountPlan(
     val propFirm: PropFirm,
     val name: String,
     val initialBalance: Double,
@@ -35,9 +35,9 @@ data class AccountTemplate(
 )
 
 /**
- * Converte a classe de [AccountTemplate] para a classe [AccountPropFirm.Challenge]
+ * Converte a classe de [AccountPlan] para a classe [AccountPropFirm.Challenge]
  */
-fun AccountTemplate.toAccountPropFirmChallenge() = AccountPropFirm.Challenge(
+fun AccountPlan.toAccountPropFirmChallenge() = AccountPropFirm.Challenge(
     info = AccountInfo(
         propFirm = this.propFirm,
         accountName = this.name,
@@ -52,9 +52,9 @@ fun AccountTemplate.toAccountPropFirmChallenge() = AccountPropFirm.Challenge(
 )
 
 /**
- * Converte a classe de [AccountTemplate] para [AccountPropFirm.Funded]
+ * Converte a classe de [AccountPlan] para [AccountPropFirm.Funded]
  */
-fun AccountTemplate.toAccountPropFirmFunded() = AccountPropFirm.Funded(
+fun AccountPlan.toAccountPropFirmFunded() = AccountPropFirm.Funded(
     info = AccountInfo(
         propFirm = this.propFirm,
         accountName = this.name,

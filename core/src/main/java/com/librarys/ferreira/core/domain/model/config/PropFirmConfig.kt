@@ -3,7 +3,7 @@ package com.librarys.ferreira.core.domain.model.config
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.rules.AccountRules
-import com.librarys.ferreira.core.domain.model.template.AccountTemplate
+import com.librarys.ferreira.core.domain.model.template.AccountPlan
 
 /**
  * Objeto para preenchimento dos dados das contas de mesas proprietárias que serão suportados pelo App
@@ -16,13 +16,13 @@ object PropFirmConfig {
      * @param propFirm mesa proprietária para a busca
      * @return lista de contas disponíveis
      */
-    fun getAccountsFor(propFirm: PropFirm) : List<AccountTemplate> {
+    fun getAccountsFor(propFirm: PropFirm) : List<AccountPlan> {
 
         return when(propFirm) {
             PropFirm.YLOS_TRADING -> listOf(
 
                 //Standard 25K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.YLOS_TRADING,
                     name = "Standard 25K",
                     initialBalance = 25000.0,
@@ -41,7 +41,7 @@ object PropFirmConfig {
                 ),
 
                 //Standard 50K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.YLOS_TRADING,
                     name = "Standard 50K",
                     initialBalance = 50000.0,
@@ -60,7 +60,7 @@ object PropFirmConfig {
                 ),
 
                 //Standard 100K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.YLOS_TRADING,
                     name = "Standard 100K",
                     initialBalance = 100000.0,
@@ -79,7 +79,7 @@ object PropFirmConfig {
                 ),
 
                 //Instant Funding 25K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.YLOS_TRADING,
                     name = "Instant Funding 25K",
                     initialBalance = 25000.0,
@@ -101,7 +101,7 @@ object PropFirmConfig {
             PropFirm.TRADEIFY -> listOf(
 
                 //Select 25K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.TRADEIFY,
                     name = "Select 25K",
                     initialBalance = 25000.0,
@@ -118,7 +118,7 @@ object PropFirmConfig {
                 ),
 
                 //Select 50K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.TRADEIFY,
                     name = "Select 50K",
                     initialBalance = 50000.0,
@@ -135,7 +135,7 @@ object PropFirmConfig {
                 ),
 
                 //Select 100K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.TRADEIFY,
                     name = "Select 100K",
                     initialBalance = 100000.0,
@@ -152,7 +152,7 @@ object PropFirmConfig {
                 ),
 
                 //Growth 25K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.TRADEIFY,
                     name = "Growth 25K",
                     initialBalance = 25000.0,
@@ -170,7 +170,7 @@ object PropFirmConfig {
                 ),
 
                 //Growth 50K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.TRADEIFY,
                     name = "Growth 50K",
                     initialBalance = 50000.0,
@@ -191,7 +191,7 @@ object PropFirmConfig {
             PropFirm.LUCID_TRADING -> listOf(
 
                 //Lucid Flex 25K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.LUCID_TRADING,
                     name = "Lucid Flex 25K",
                     initialBalance = 25000.0,
@@ -210,7 +210,7 @@ object PropFirmConfig {
                 ),
 
                 //Lucid Flex 50K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.LUCID_TRADING,
                     name = "Lucid Flex 50K",
                     initialBalance = 50000.0,
@@ -229,7 +229,7 @@ object PropFirmConfig {
                 ),
 
                 //Lucid Flex 100K
-                AccountTemplate(
+                AccountPlan(
                     propFirm = PropFirm.LUCID_TRADING,
                     name = "Lucid Flex 100K",
                     initialBalance = 100000.0,
