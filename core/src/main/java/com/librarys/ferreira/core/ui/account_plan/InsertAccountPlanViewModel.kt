@@ -1,13 +1,11 @@
 package com.librarys.ferreira.core.ui.account_plan
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.librarys.ferreira.core.domain.model.config.PropFirmConfig
 import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.template.AccountPlan
-import com.librarys.ferreira.core.domain.usecase.ProcessTradeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InsertAccountPlanViewModel @Inject constructor(
-    private val tradeUseCase: ProcessTradeUseCase
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InsertAccountPlanUiState())

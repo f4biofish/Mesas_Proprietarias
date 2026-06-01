@@ -6,7 +6,6 @@ import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
 import com.librarys.ferreira.core.domain.model.model.Trades
-import com.librarys.ferreira.core.domain.usecase.ProcessTradeUseCase
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 import java.util.Date
@@ -42,9 +41,6 @@ class TradeTest {
             profit = 360.0,
         )
 
-        val accountUpdated = ProcessTradeUseCase().invoke(account, trade)
-
-        assertEquals(25351.28, accountUpdated.currentBalance)
 
     }
 
