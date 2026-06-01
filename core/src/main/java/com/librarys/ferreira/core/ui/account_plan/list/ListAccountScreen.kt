@@ -16,12 +16,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.librarys.ferreira.core.R
 import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
@@ -29,7 +31,6 @@ import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.ui.theme.AppTheme
 import com.librarys.ferreira.core.ui.theme.marginDefault
 import java.text.NumberFormat
-import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -66,14 +67,14 @@ fun ListAccountContent(
                         .padding(marginDefault)
                 ) {
                     Text(
-                        text = "Minhas Contas",
+                        text = stringResource(R.string.minhas_contas),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp
                         )
                     )
                     Text(
-                        text = "Gerencie seus planos de mesas proprietárias",
+                        text = stringResource(R.string.gerencie_seus_planos),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp,
                             color = Color.White.copy(alpha = 0.7f)
@@ -89,7 +90,7 @@ fun ListAccountContent(
                 contentColor = Color.White,
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Adicionar Conta")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.adicionar_conta))
             }
         }
     ) { paddingValues ->
@@ -203,11 +204,11 @@ private fun EmptyAccountsView(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Nenhuma conta encontrada",
+            text = stringResource(R.string.nenhuma_conta),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
         )
         Text(
-            text = "Toque no botão + para adicionar sua primeira conta",
+            text = stringResource(R.string.adicione_a_primeira_conta),
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray,
             textAlign = TextAlign.Center

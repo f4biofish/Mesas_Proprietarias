@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">core</string>
+
+    <string name="minhas_contas">Minhas Contas</string>
+    <string name="gerencie_seus_planos">
+        Gerencie seus planos de mesas proprietárias
+    </string>
+    <string name="adicionar_conta">Adicionar Conta</string>
+    <string name="nenhuma_conta">Nenhuma conta encontrada</string>
+    <string name="adicione_a_primeira_conta">
+        Toque no botão + para adicionar sua primeira conta
+    </string>
 </resources>
