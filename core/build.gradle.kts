@@ -38,6 +38,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -70,4 +71,5 @@ dependencies {
 
     implementation(libs.google.gson)
     implementation(libs.material.icons)
+    implementation(libs.timber)
 }

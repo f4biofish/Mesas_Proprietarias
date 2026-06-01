@@ -15,7 +15,7 @@ interface AccountDao {
     fun getAllAccounts(): Flow<List<AccountEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAccount(account: AccountEntity)
+    suspend fun insertAccount(account: AccountEntity) : Int
 
     @Delete
     suspend fun deleteAccount(account: AccountEntity)
