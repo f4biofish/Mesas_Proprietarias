@@ -2,6 +2,7 @@ package com.librarys.ferreira.core.domain.model.model
 
 import java.util.Date
 import java.util.UUID
+import kotlin.require
 
 /**
  * Classe para registros de trades efetuados
@@ -21,4 +22,16 @@ data class Trades(
     val symbolAtivo: SymbolAtivo,
     val contratos: Int,
     val profit: Double,
-)
+) {
+    init {
+        //Validação para garantir que o campo date não seja maior que a data atual
+        require(date <= Date()) {
+            "A data do trade não pode ser maior que a data atual."
+        }
+
+        //Validação para garantir que o campo contratos não seja negativo ou 0
+        require(contratos > 0){
+            "O número de contratos deve ser maior que zero."
+        }
+    }
+}
