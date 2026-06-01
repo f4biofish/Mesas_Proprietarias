@@ -68,4 +68,5 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.google.gson)
+    implementation(libs.material.icons)
 }
