@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
+import com.librarys.ferreira.core.domain.model.rules.AccountRules
 import com.librarys.ferreira.core.domain.model.template.AccountPlan
 import com.librarys.ferreira.core.ui.theme.AppTheme
 import com.librarys.ferreira.core.ui.theme.marginDefault
@@ -78,6 +79,7 @@ private fun InsertAccountPlanContent(
 
     var showStartingDatePicker by remember { mutableStateOf(false) }
     var showBrokenDatePicker by remember { mutableStateOf(false) }
+    var selectedRule by remember { mutableStateOf<AccountRules?>(null) }
 
     if (showStartingDatePicker) {
         AccountPlanDatePicker(
@@ -98,6 +100,13 @@ private fun InsertAccountPlanContent(
                 showBrokenDatePicker = false
             },
             onDismiss = { showBrokenDatePicker = false }
+        )
+    }
+
+    if (selectedRule != null) {
+        RuleDetailDialog(
+            rule = selectedRule!!,
+            onDismiss = { selectedRule = null }
         )
     }
 
@@ -294,21 +303,80 @@ private fun InsertAccountPlanContent(
                         .border(1.dp, Color.LightGray.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
                         .padding(vertical = 4.dp)
                 ) {
-                    RuleItem("Meta de Lucro", "Defina a meta de lucro do plano", Icons.AutoMirrored.Filled.TrendingUp, Color(0xFFE0E7FF), Color(0xFF4338CA))
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.4f))
-                    RuleItem("Perda Máxima", "Defina o limite de perda máxima", Icons.Default.Shield, Color(0xFFDCFCE7), Color(0xFF15803D))
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.4f))
-                    RuleItem("Perda Diária Máxima", "Defina o limite de perda diária", Icons.Default.CalendarToday, Color(0xFFF3E8FF), Color(0xFF7E22CE))
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp, color = Color.LightGray.copy(alpha = 0.4f))
-                    RuleItem("Regras de Permanência", "Defina o tempo mínimo de operação", Icons.Default.AccessTime, Color(0xFFFFEDD5), Color(0xFFC2410C))
-                }
-            }
+                    val rulesToDisplay = mutableListOf<@Composable () -> Unit>()
 
-            item {
-                TextButton(onClick = { /* Adicionar regra */ }, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Adicionar regra", style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, color = Color(0xFF1D4ED8)))
+                    if (uiState.metaProfit.isNotEmpty()) {
+                        rulesToDisplay.add {
+                            RuleItem(
+                                title = "Meta de Lucro",
+                                subtitle = "Alcance o lucro de $${uiState.metaProfit}",
+                                icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                backgroundColor = Color(0xFFE0E7FF),
+                                iconColor = Color(0xFF4338CA),
+                                onClick = { }
+                            )
+                        }
+                    }
+
+                    if (uiState.maxDrawdown.isNotEmpty()) {
+                        rulesToDisplay.add {
+                            RuleItem(
+                                title = "Perda Máxima",
+                                subtitle = "Limite total de perda de $${uiState.maxDrawdown}",
+                                icon = Icons.Default.Shield,
+                                backgroundColor = Color(0xFFDCFCE7),
+                                iconColor = Color(0xFF15803D),
+                                onClick = { }
+                            )
+                        }
+                    }
+
+                    if (uiState.dailyLossLimit.isNotEmpty()) {
+                        rulesToDisplay.add {
+                            RuleItem(
+                                title = "Perda Diária Máxima",
+                                subtitle = "Limite diário de $${uiState.dailyLossLimit}",
+                                icon = Icons.Default.CalendarToday,
+                                backgroundColor = Color(0xFFF3E8FF),
+                                iconColor = Color(0xFF7E22CE),
+                                onClick = { }
+                            )
+                        }
+                    }
+
+                    uiState.rules.forEach { rule ->
+                        val info = getRuleInfo(rule)
+                        rulesToDisplay.add {
+                            RuleItem(
+                                title = info.title,
+                                subtitle = info.subtitle,
+                                icon = info.icon,
+                                backgroundColor = info.backgroundColor,
+                                iconColor = info.iconColor,
+                                onClick = { selectedRule = rule }
+                            )
+                        }
+                    }
+
+                    if (rulesToDisplay.isEmpty()) {
+                        Text(
+                            text = "Nenhuma regra adicional configurada",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    } else {
+                        rulesToDisplay.forEachIndexed { index, ruleComposable ->
+                            ruleComposable()
+                            if (index < rulesToDisplay.size - 1) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    thickness = 0.5.dp,
+                                    color = Color.LightGray.copy(alpha = 0.4f)
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -423,17 +491,27 @@ private fun ItemDropdownAccountPlan(
 }
 
 @Composable
-private fun RuleItem(title: String, subtitle: String, icon: ImageVector, backgroundColor: Color, iconColor: Color) {
+private fun RuleItem(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    backgroundColor: Color,
+    iconColor: Color,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier
-            .size(40.dp)
-            .background(backgroundColor, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(backgroundColor, RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
             Icon(imageVector = icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(20.dp))
         }
         Spacer(modifier = Modifier.width(12.dp))
@@ -500,5 +578,64 @@ private fun AccountPlanDatePicker(
         }
     ) {
         DatePicker(state = datePickerState)
+    }
+}
+
+@Composable
+private fun RuleDetailDialog(
+    rule: AccountRules,
+    onDismiss: () -> Unit
+) {
+    val info = getRuleInfo(rule)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(info.icon, contentDescription = null, modifier = Modifier.size(40.dp), tint = info.iconColor) },
+        title = { Text(text = info.title, fontWeight = FontWeight.Bold) },
+        text = { Text(text = info.description) },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Fechar")
+            }
+        }
+    )
+}
+
+private data class RuleUiInfo(
+    val title: String,
+    val description: String,
+    val subtitle: String,
+    val icon: ImageVector,
+    val backgroundColor: Color,
+    val iconColor: Color
+)
+
+private fun getRuleInfo(rule: AccountRules): RuleUiInfo {
+    return when (rule) {
+        is AccountRules.ConsistencyRule -> RuleUiInfo(
+            title = "Regra de Consistência",
+            description = "${rule.description}\n\nO percentual máximo que um único dia de operação pode ter no lucro total da conta é de ${rule.maxPercentage}%.",
+            subtitle = "Máximo ${rule.maxPercentage}% por dia",
+            icon = Icons.AutoMirrored.Filled.TrendingUp,
+            backgroundColor = Color(0xFFE0E7FF),
+            iconColor = Color(0xFF4338CA)
+        )
+
+        is AccountRules.NewsRestrictionRule -> RuleUiInfo(
+            title = "Restrição de Notícias",
+            description = "É proibido operar durante notícias de alto impacto.\n\nVocê deve estar fora de operação ${rule.minutesBefore} minutos antes e aguardar ${rule.minutesAfter} minutos após o anúncio.",
+            subtitle = "${rule.minutesBefore} min antes e ${rule.minutesAfter} min depois",
+            icon = Icons.Default.Notifications,
+            backgroundColor = Color(0xFFDCFCE7),
+            iconColor = Color(0xFF15803D)
+        )
+
+        is AccountRules.MinimumTradingDaysRule -> RuleUiInfo(
+            title = "Dias Mínimos de Operação",
+            description = "Para solicitar saque, você deve cumprir:\n\n- ${rule.daysTrading} dias mínimos de operação.\n- ${rule.daysWin} dias com lucro superior a $${rule.profitWin}.",
+            subtitle = "Mínimo ${rule.daysTrading} dias de trade",
+            icon = Icons.Default.CalendarToday,
+            backgroundColor = Color(0xFFF3E8FF),
+            iconColor = Color(0xFF7E22CE)
+        )
     }
 }

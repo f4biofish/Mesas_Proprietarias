@@ -18,6 +18,7 @@ data class InsertAccountPlanUiState(
     val dayBroken: Date? = null,
     val initialBalance: String = "",
     val currentBalance: String = "",
+    val metaProfit: String = "",
     val drawdownType: DrawnDownTypes? = null,
     val maxDrawdown: String = "",
     val dailyLossLimit: String = "",

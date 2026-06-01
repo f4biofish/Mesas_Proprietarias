@@ -42,6 +42,7 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
             accountName = accountPlan.name,
             initialBalance = accountPlan.initialBalance.toString(),
             currentBalance = accountPlan.initialBalance.toString(), // Usually current balance starts as initial balance
+            metaProfit = accountPlan.metaProfit?.toString() ?: "",
             maxDrawdown = accountPlan.maxDrawdown.toString(),
             dailyLossLimit = accountPlan.dailyLossLimit?.toString() ?: "",
             drawdownType = accountPlan.typeDrawdownChallenge, // Assuming we start with Challenge type
