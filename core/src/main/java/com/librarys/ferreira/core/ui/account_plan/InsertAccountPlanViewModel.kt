@@ -3,6 +3,7 @@ package com.librarys.ferreira.core.ui.account_plan
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.librarys.ferreira.core.domain.model.config.PropFirmConfig
+import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.template.AccountPlan
@@ -62,6 +63,7 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
     fun onAccountPlanSelected(accountPlan: AccountPlan) {
         _uiState.update { it.copy(
             accountName = accountPlan.name,
+            selectedAccountStage = AccountStage.CHALLENGE,
             initialBalance = currencyFormatter.format(accountPlan.initialBalance),
             currentBalance = currencyFormatter.format(accountPlan.initialBalance), // Usually current balance starts as initial balance
             metaProfit = accountPlan.metaProfit?.toString() ?: "",
@@ -69,6 +71,21 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
             dailyLossLimit = accountPlan.dailyLossLimit?.toString() ?: "",
             drawdownType = accountPlan.typeDrawdownChallenge, // Assuming we start with Challenge type
             rules = accountPlan.rulesChallenge
+        ) }
+    }
+
+    fun onAccountStageSelected(stage: AccountStage) {
+        val currentPlanName = _uiState.value.accountName
+        val currentPropFirm = _uiState.value.selectedPropFirm
+        
+        val plan = if (currentPropFirm != null) {
+            PropFirmConfig.getAccountsFor(currentPropFirm).find { it.name == currentPlanName }
+        } else null
+
+        _uiState.update { it.copy(
+            selectedAccountStage = stage,
+            drawdownType = if (stage == AccountStage.CHALLENGE) plan?.typeDrawdownChallenge else plan?.typeDrawdownFunded,
+            rules = if (stage == AccountStage.CHALLENGE) plan?.rulesChallenge ?: emptyList() else plan?.rulesFunded ?: emptyList()
         ) }
     }
 

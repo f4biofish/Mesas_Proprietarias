@@ -1,5 +1,6 @@
 package com.librarys.ferreira.core
 
+import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
@@ -20,6 +21,7 @@ class TradeTest {
             id = "1",
             numberAccount = "12",
             propFirm = PropFirm.YLOS_TRADING,
+            accountStage = AccountStage.CHALLENGE,
             accountName = "Standard 25K",
             dayStarting = Date(),
             dayBroken = null,

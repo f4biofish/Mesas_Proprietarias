@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.rules.AccountRules
@@ -45,6 +46,7 @@ fun InsertAccountPlanScreen(
         onBackClick = onBackClick,
         onAccountNumberChange = viewModel::onAccountNumberChange,
         onPropFirmSelected = viewModel::onPropFirmSelected,
+        onAccountStageSelected = viewModel::onAccountStageSelected,
         onAccountPlanSelected = viewModel::onAccountPlanSelected,
         onInitialBalanceChange = viewModel::onInitialBalanceChange,
         onCurrentBalanceChange = viewModel::onCurrentBalanceChange,
@@ -64,6 +66,7 @@ private fun InsertAccountPlanContent(
     onBackClick: () -> Unit,
     onAccountNumberChange: (String) -> Unit,
     onPropFirmSelected: (PropFirm) -> Unit,
+    onAccountStageSelected: (AccountStage) -> Unit,
     onAccountPlanSelected: (AccountPlan) -> Unit,
     onInitialBalanceChange: (String) -> Unit,
     onCurrentBalanceChange: (String) -> Unit,
@@ -202,6 +205,17 @@ private fun InsertAccountPlanContent(
                     selectedOption = uiState.selectedPropFirm?.name,
                     options = PropFirm.entries.map { it.name },
                     onOptionSelected = { onPropFirmSelected(PropFirm.valueOf(it)) }
+                )
+            }
+
+            item {
+                ItemDropdownAccountPlan(
+                    label = "Estágio da conta",
+                    isRequired = true,
+                    placeholder = "Selecione o estágio",
+                    selectedOption = uiState.selectedAccountStage?.name,
+                    options = AccountStage.entries.map { it.name },
+                    onOptionSelected = { onAccountStageSelected(AccountStage.valueOf(it)) }
                 )
             }
 
@@ -545,6 +559,7 @@ private fun InsertAccountPlanScreenPreview() {
                 onBackClick = {},
                 onAccountNumberChange = {},
                 onPropFirmSelected = {},
+                onAccountStageSelected = {},
                 onAccountPlanSelected = {},
                 onInitialBalanceChange = {},
                 onCurrentBalanceChange = {},

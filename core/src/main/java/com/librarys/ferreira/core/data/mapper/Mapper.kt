@@ -2,6 +2,7 @@ package com.librarys.ferreira.core.data.mapper
 
 import com.google.gson.Gson
 import com.librarys.ferreira.core.data.local.entities.AccountEntity
+import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
@@ -24,6 +25,7 @@ fun AccountEntity.toDomain() : AccountInfo {
         typeDrawdown = DrawnDownTypes.valueOf(this.typeDrawdown),
         maxDrawdownAmmount = this.maxDrawdownAmmount,
         dailyLossLimit = this.dailyLossLimit,
+        accountStage = AccountStage.valueOf(this.accountStage),
         rulesPropFirm = rulesPropFirm.map { json ->
             gson.fromJson(json, AccountRules::class.java)
         }
@@ -44,6 +46,7 @@ fun AccountInfo.toEntity() : AccountEntity {
         typeDrawdown = this.typeDrawdown.name,
         maxDrawdownAmmount = this.maxDrawdownAmmount,
         dailyLossLimit = this.dailyLossLimit,
+        accountStage = this.accountStage.name,
         rulesPropFirm = this.rulesPropFirm.map { rule ->
             gson.toJson(rule)
         }

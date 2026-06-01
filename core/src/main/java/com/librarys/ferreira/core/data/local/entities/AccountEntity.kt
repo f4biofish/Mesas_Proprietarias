@@ -11,6 +11,7 @@ data class AccountEntity(
     val numberAccount: String,
     val propFirm: String,
     val accountName: String,
+    val accountStage: String,
     val dayStarting: Long = System.currentTimeMillis(),
     val dayBroken: Long? = null,
     val initialBalance: Double,

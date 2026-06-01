@@ -1,5 +1,6 @@
 package com.librarys.ferreira.core.domain.model.template
 
+import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
@@ -41,6 +42,7 @@ fun AccountPlan.toAccountPropFirmChallenge(numberAccount: String) = AccountPropF
     info = AccountInfo(
         numberAccount = numberAccount,
         propFirm = this.propFirm,
+        accountStage = AccountStage.CHALLENGE,
         accountName = this.name,
         initialBalance = this.initialBalance,
         currentBalance = this.initialBalance,
@@ -59,6 +61,7 @@ fun AccountPlan.toAccountPropFirmFunded(numberAccount: String) = AccountPropFirm
     info = AccountInfo(
         numberAccount = numberAccount,
         propFirm = this.propFirm,
+        accountStage = AccountStage.FUNDED,
         accountName = this.name,
         initialBalance = this.initialBalance,
         currentBalance = this.initialBalance,
