@@ -25,6 +25,7 @@ data class InsertAccountPlanUiState(
     val maxDrawdown: String = "",
     val dailyLossLimit: String = "",
     val rules: List<AccountRules> = emptyList(),
+
     val isLoading: Boolean = false,
     val isSaved: Boolean = false,
     val errorMessage: String? = null

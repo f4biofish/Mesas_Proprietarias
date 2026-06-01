@@ -264,7 +264,7 @@ private fun InsertAccountPlanContent(
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(marginDefault)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange, prefix = "$")
+                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, readOnly = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange, prefix = "$")
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         ItemTextFieldAccountPlan(label = "Saldo atual", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.currentBalance, onValueChange = onCurrentBalanceChange, prefix = "$")
@@ -289,6 +289,7 @@ private fun InsertAccountPlanContent(
                     isRequired = true,
                     placeholder = "Ex.: 1000.00",
                     prefix = "$",
+                    readOnly = true,
                     value = uiState.maxDrawdown,
                     onValueChange = onMaxDrawdownChange
                 )

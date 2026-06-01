@@ -7,6 +7,7 @@ import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.template.AccountPlan
+import com.librarys.ferreira.core.domain.usecase.ProcessTradeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
+class InsertAccountPlanViewModel @Inject constructor(
+    private val tradeUseCase: ProcessTradeUseCase
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InsertAccountPlanUiState())
     val uiState = _uiState.asStateFlow()
@@ -43,7 +46,6 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
 
 
     fun onAccountNumberChange(newValue: String) {
-        Log.d("Teste", "onAccountNumberChange: Recebido o novo valor: $newValue")
         _uiState.update { it.copy(accountNumber = newValue) }
     }
 
@@ -121,8 +123,61 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
         // TODO: Pendente a gravação do registro do plano
         // Aqui você adicionará a lógica de salvamento futuramente (ex: chamar um Repository)
         _uiState.update { it.copy(isLoading = true) }
-        
+        val flag = validateRequiredFields()
+        if(!flag) {
+            _uiState.update { it.copy(isLoading = false) }
+            return
+        }
+
         // Simulação de salvamento
         println("Salvando conta: ${_uiState.value.accountName}")
     }
+
+    /**
+     * Efetua a validação dos campos obrigatórios
+     * @return true se todos os campos forem preenchidos, false caso contrário
+     */
+    private fun validateRequiredFields() : Boolean {
+
+        val state = _uiState.value
+
+        //Validação do número da conta
+        if(state.accountNumber.isEmpty()){
+            updateMessageError("Informe o número da conta para cadastro")
+            return false
+        } else if (state.accountNumber.length < 5) {
+            updateMessageError("O número da conta deve ter no mínimo 5 dígitos")
+            return false
+        }
+
+        //Validação da mesa proprietária
+        if(state.selectedPropFirm == null){
+            updateMessageError("Selecione a mesa proprietária para cadastro")
+            return false
+        }
+
+        //Validação do Estágio da Conta
+        if(state.selectedAccountStage == null) {
+            updateMessageError("Selecione o estágio da conta para cadastro")
+            return false
+        }
+
+        //Validação do nome do plano da conta
+        if(state.accountName.isEmpty()){
+            updateMessageError("Selecione o plano da conta para cadastro")
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * Efetua a atualização da mensagem de erro
+     * @param messageError mensagem de erro para atualização
+     */
+    private fun updateMessageError(messageError: String) {
+        _uiState.update { it.copy(errorMessage = messageError) }
+    }
+
+
 }
