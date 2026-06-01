@@ -15,7 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -57,8 +57,8 @@ fun ListAccountContent(
     Scaffold(
         topBar = {
             Surface(
-                color = Color(0xFF0D1B3E),
-                contentColor = Color.White
+                color = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Column(
                     modifier = Modifier
@@ -77,7 +77,7 @@ fun ListAccountContent(
                         text = stringResource(R.string.gerencie_seus_planos),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp,
-                            color = Color.White.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                         )
                     )
                 }
@@ -86,8 +86,8 @@ fun ListAccountContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddAccountClick,
-                containerColor = Color(0xFF1D4ED8),
-                contentColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.adicionar_conta))
@@ -147,13 +147,16 @@ private fun AccountItem(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .background(Color(0xFFE0E7FF), RoundedCornerShape(8.dp)),
+                    .background(
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        RoundedCornerShape(8.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Default.AccountBalanceWallet,
                     contentDescription = null,
-                    tint = Color(0xFF4338CA),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -163,25 +166,32 @@ private fun AccountItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = account.accountName,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 )
                 Text(
                     text = "${account.propFirm.name} • ${account.accountStage.name}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Saldo: ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = currencyFormatter.format(account.currentBalance),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.SemiBold,
-                            color = if (account.currentBalance >= account.initialBalance) Color(0xFF15803D) else Color.Red
+                            color = if (account.currentBalance >= account.initialBalance) {
+                                colorResource(R.color.positive_green)
+                            } else {
+                                MaterialTheme.colorScheme.error
+                            }
                         )
                     )
                 }
@@ -190,7 +200,7 @@ private fun AccountItem(
             Icon(
                 Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
-                tint = Color.LightGray,
+                tint = MaterialTheme.colorScheme.outlineVariant,
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -210,7 +220,7 @@ private fun EmptyAccountsView(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.adicione_a_primeira_conta),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }

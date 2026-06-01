@@ -18,12 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.librarys.ferreira.core.R
 import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
@@ -142,8 +144,8 @@ private fun InsertAccountPlanContent(
     Scaffold(
         topBar = {
             Surface(
-                color = Color(0xFF0D1B3E),
-                contentColor = Color.White
+                color = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Column(
                     modifier = Modifier
@@ -156,7 +158,7 @@ private fun InsertAccountPlanContent(
                         modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
                         IconButton(onClick = onBackClick) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                         Text(
                             text = "Nova Conta",
@@ -168,7 +170,10 @@ private fun InsertAccountPlanContent(
                     }
                     Text(
                         text = "Preencha os dados do plano da mesa proprietária",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                        ),
                         modifier = Modifier.padding(start = 52.dp)
                     )
                 }
@@ -188,10 +193,13 @@ private fun InsertAccountPlanContent(
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D4ED8))
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
                 ) {
                     if (uiState.isLoading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                     } else {
                         Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
@@ -342,7 +350,7 @@ private fun InsertAccountPlanContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, Color.LightGray.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
                         .padding(vertical = 4.dp)
                 ) {
                     val rulesToDisplay = mutableListOf<@Composable () -> Unit>()
@@ -353,8 +361,8 @@ private fun InsertAccountPlanContent(
                                 title = "Meta de Lucro",
                                 subtitle = "Alcance o lucro de $${uiState.metaProfit}",
                                 icon = Icons.AutoMirrored.Filled.TrendingUp,
-                                backgroundColor = Color(0xFFE0E7FF),
-                                iconColor = Color(0xFF4338CA),
+                                backgroundColor = colorResource(R.color.rule_consistency_bg),
+                                iconColor = colorResource(R.color.rule_consistency_icon),
                                 onClick = { }
                             )
                         }
@@ -366,8 +374,8 @@ private fun InsertAccountPlanContent(
                                 title = "Perda Máxima",
                                 subtitle = "Limite total de perda de $${uiState.maxDrawdown}",
                                 icon = Icons.Default.Shield,
-                                backgroundColor = Color(0xFFDCFCE7),
-                                iconColor = Color(0xFF15803D),
+                                backgroundColor = colorResource(R.color.rule_news_bg),
+                                iconColor = colorResource(R.color.rule_news_icon),
                                 onClick = { }
                             )
                         }
@@ -379,8 +387,8 @@ private fun InsertAccountPlanContent(
                                 title = "Perda Diária Máxima",
                                 subtitle = "Limite diário de $${uiState.dailyLossLimit}",
                                 icon = Icons.Default.CalendarToday,
-                                backgroundColor = Color(0xFFF3E8FF),
-                                iconColor = Color(0xFF7E22CE),
+                                backgroundColor = colorResource(R.color.rule_days_bg),
+                                iconColor = colorResource(R.color.rule_days_icon),
                                 onClick = { }
                             )
                         }
@@ -393,8 +401,8 @@ private fun InsertAccountPlanContent(
                                 title = info.title,
                                 subtitle = info.subtitle,
                                 icon = info.icon,
-                                backgroundColor = info.backgroundColor,
-                                iconColor = info.iconColor,
+                                backgroundColor = colorResource(info.backgroundColorRes),
+                                iconColor = colorResource(info.iconColorRes),
                                 onClick = { selectedRule = rule }
                             )
                         }
@@ -404,7 +412,7 @@ private fun InsertAccountPlanContent(
                         Text(
                             text = "Nenhuma regra adicional configurada",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(16.dp)
                         )
                     } else {
@@ -414,7 +422,7 @@ private fun InsertAccountPlanContent(
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     thickness = 0.5.dp,
-                                    color = Color.LightGray.copy(alpha = 0.4f)
+                                    color = MaterialTheme.colorScheme.outlineVariant
                                 )
                             }
                         }
@@ -442,7 +450,7 @@ private fun ItemTextFieldAccountPlan(
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(text = label, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp))
-            if (isRequired) Text(text = "*", color = Color.Red, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
+            if (isRequired) Text(text = "*", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
         }
         
         Box(
@@ -457,25 +465,25 @@ private fun ItemTextFieldAccountPlan(
                 onValueChange = onValueChange,
                 readOnly = readOnly,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { if (placeholder != null) Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                trailingIcon = if (trailingIcon != null) { { Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray) } } else null,
+                placeholder = { if (placeholder != null) Text(text = placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                trailingIcon = if (trailingIcon != null) { { Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) } } else null,
                 shape = RoundedCornerShape(10.dp),
                 prefix = {
                     if(!prefix.isNullOrEmpty()) {
                         Text(
                             text = prefix,
-                            color = Color.Gray.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f),
-                    disabledBorderColor = Color.LightGray.copy(alpha = 0.6f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    disabledBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledPlaceholderColor = Color.Gray.copy(alpha = 0.7f),
-                    disabledTrailingIconColor = Color.Gray,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 singleLine = true,
@@ -499,7 +507,7 @@ private fun ItemDropdownAccountPlan(
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(text = label, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp))
-            if (isRequired) Text(text = "*", color = Color.Red, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
+            if (isRequired) Text(text = "*", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
         }
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -510,14 +518,14 @@ private fun ItemDropdownAccountPlan(
                 value = selectedOption ?: "",
                 onValueChange = {},
                 readOnly = true,
-                placeholder = { Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f)) },
+                placeholder = { Text(text = placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)) },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                     focusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -570,9 +578,9 @@ private fun RuleItem(
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = title, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+        Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
     }
 }
 
@@ -643,7 +651,7 @@ private fun RuleDetailDialog(
     val info = getRuleInfo(rule)
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(info.icon, contentDescription = null, modifier = Modifier.size(40.dp), tint = info.iconColor) },
+        icon = { Icon(info.icon, contentDescription = null, modifier = Modifier.size(40.dp), tint = colorResource(info.iconColorRes)) },
         title = { Text(text = info.title, fontWeight = FontWeight.Bold) },
         text = { Text(text = info.description) },
         confirmButton = {
@@ -659,8 +667,8 @@ private data class RuleUiInfo(
     val description: String,
     val subtitle: String,
     val icon: ImageVector,
-    val backgroundColor: Color,
-    val iconColor: Color
+    val backgroundColorRes: Int,
+    val iconColorRes: Int
 )
 
 private fun getRuleInfo(rule: AccountRules): RuleUiInfo {
@@ -670,8 +678,8 @@ private fun getRuleInfo(rule: AccountRules): RuleUiInfo {
             description = "${rule.description}\n\nO percentual máximo que um único dia de operação pode ter no lucro total da conta é de ${rule.maxPercentage}%.",
             subtitle = "Máximo ${rule.maxPercentage}% por dia",
             icon = Icons.AutoMirrored.Filled.TrendingUp,
-            backgroundColor = Color(0xFFE0E7FF),
-            iconColor = Color(0xFF4338CA)
+            backgroundColorRes = R.color.rule_consistency_bg,
+            iconColorRes = R.color.rule_consistency_icon
         )
 
         is AccountRules.NewsRestrictionRule -> RuleUiInfo(
@@ -679,8 +687,8 @@ private fun getRuleInfo(rule: AccountRules): RuleUiInfo {
             description = "É proibido operar durante notícias de alto impacto.\n\nVocê deve estar fora de operação ${rule.minutesBefore} minutos antes e aguardar ${rule.minutesAfter} minutos após o anúncio.",
             subtitle = "${rule.minutesBefore} min antes e ${rule.minutesAfter} min depois",
             icon = Icons.Default.Notifications,
-            backgroundColor = Color(0xFFDCFCE7),
-            iconColor = Color(0xFF15803D)
+            backgroundColorRes = R.color.rule_news_bg,
+            iconColorRes = R.color.rule_news_icon
         )
 
         is AccountRules.MinimumTradingDaysRule -> RuleUiInfo(
@@ -688,8 +696,8 @@ private fun getRuleInfo(rule: AccountRules): RuleUiInfo {
             description = "Para solicitar saque, você deve cumprir:\n\n- ${rule.daysTrading} dias mínimos de operação.\n- ${rule.daysWin} dias com lucro superior a $${rule.profitWin}.",
             subtitle = "Mínimo ${rule.daysTrading} dias de trade",
             icon = Icons.Default.CalendarToday,
-            backgroundColor = Color(0xFFF3E8FF),
-            iconColor = Color(0xFF7E22CE)
+            backgroundColorRes = R.color.rule_days_bg,
+            iconColorRes = R.color.rule_days_icon
         )
     }
 }

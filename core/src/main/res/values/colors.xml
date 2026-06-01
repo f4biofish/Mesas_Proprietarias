@@ -7,4 +7,20 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Account List Colors -->
+    <color name="top_bar_blue">#0D1B3E</color>
+    <color name="fab_blue">#1D4ED8</color>
+    <color name="icon_bg_blue">#E0E7FF</color>
+    <color name="icon_tint_blue">#4338CA</color>
+    <color name="positive_green">#15803D</color>
+    <color name="negative_red">#D32F2F</color>
+
+    <!-- Rule Specific Colors -->
+    <color name="rule_news_bg">#DCFCE7</color>
+    <color name="rule_news_icon">#15803D</color>
+    <color name="rule_consistency_bg">#E0E7FF</color>
+    <color name="rule_consistency_icon">#4338CA</color>
+    <color name="rule_days_bg">#F3E8FF</color>
+    <color name="rule_days_icon">#7E22CE</color>
 </resources>
