@@ -21,9 +21,9 @@ interface TradesDao {
     fun insertTrades(trades: TradesEntity) : Long
 
     @Delete
-    fun deleteTrade(trade: TradesEntity) : Long
+    fun deleteTrade(trade: TradesEntity) : Int
 
     @Query("DELETE FROM trades WHERE accountInfoId = :accountId")
-    fun deleteAllTradesByAccount(accountId: String) : Long
+    fun deleteAllTradesByAccount(accountId: String) : Int
 
 }
