@@ -28,6 +28,7 @@ import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.ui.theme.AppTheme
 import com.librarys.ferreira.core.ui.theme.marginDefault
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -48,6 +49,8 @@ fun InsertAccountPlanScreen(
         onDrawdownTypeSelected = viewModel::onDrawdownTypeSelected,
         onMaxDrawdownChange = viewModel::onMaxDrawdownChange,
         onDailyLossLimitChange = viewModel::onDailyLossLimitChange,
+        onDayStartingChange = viewModel::onDayStartingChange,
+        onDayBrokenChange = viewModel::onDayBrokenChange,
         onSaveClick = viewModel::onSaveClick
     )
 }
@@ -65,10 +68,37 @@ private fun InsertAccountPlanContent(
     onDrawdownTypeSelected: (DrawnDownTypes) -> Unit,
     onMaxDrawdownChange: (String) -> Unit,
     onDailyLossLimitChange: (String) -> Unit,
+    onDayStartingChange: (Date) -> Unit,
+    onDayBrokenChange: (Date?) -> Unit,
     onSaveClick: () -> Unit
 ) {
     Log.d("Teste", "InsertAccountPlanContent: Iniciando")
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    var showStartingDatePicker by remember { mutableStateOf(false) }
+    var showBrokenDatePicker by remember { mutableStateOf(false) }
+
+    if (showStartingDatePicker) {
+        AccountPlanDatePicker(
+            initialDate = uiState.dayStarting,
+            onDateSelected = {
+                onDayStartingChange(it)
+                showStartingDatePicker = false
+            },
+            onDismiss = { showStartingDatePicker = false }
+        )
+    }
+
+    if (showBrokenDatePicker) {
+        AccountPlanDatePicker(
+            initialDate = uiState.dayBroken ?: Date(),
+            onDateSelected = {
+                onDayBrokenChange(it)
+                showBrokenDatePicker = false
+            },
+            onDismiss = { showBrokenDatePicker = false }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -184,7 +214,8 @@ private fun InsertAccountPlanContent(
                             value = dateFormat.format(uiState.dayStarting),
                             onValueChange = {},
                             readOnly = true,
-                            trailingIcon = Icons.Default.CalendarToday
+                            trailingIcon = Icons.Default.CalendarToday,
+                            onClick = { showStartingDatePicker = true }
                         )
                     }
                     Box(modifier = Modifier.weight(1f)) {
@@ -194,7 +225,8 @@ private fun InsertAccountPlanContent(
                             value = uiState.dayBroken?.let { dateFormat.format(it) } ?: "",
                             onValueChange = {},
                             readOnly = true,
-                            trailingIcon = Icons.Default.CalendarToday
+                            trailingIcon = Icons.Default.CalendarToday,
+                            onClick = { showBrokenDatePicker = true }
                         )
                     }
                 }
@@ -287,24 +319,42 @@ private fun ItemTextFieldAccountPlan(
     value: String = "",
     onValueChange: (String) -> Unit,
     readOnly: Boolean = false,
-    trailingIcon: ImageVector? = null
+    trailingIcon: ImageVector? = null,
+    onClick: (() -> Unit)? = null
 ) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(text = label, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp))
             if (isRequired) Text(text = "*", color = Color.Red, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
         }
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            readOnly = readOnly,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { if (placeholder != null) Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            trailingIcon = if (trailingIcon != null) { { Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray) } } else null,
-            shape = RoundedCornerShape(10.dp),
-            colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f)),
-            singleLine = true
-        )
+        
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(
+                    if (onClick != null) Modifier.clickable { onClick() } else Modifier
+                )
+        ) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                readOnly = readOnly,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { if (placeholder != null) Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                trailingIcon = if (trailingIcon != null) { { Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray) } } else null,
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f),
+                    disabledBorderColor = Color.LightGray.copy(alpha = 0.6f),
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledPlaceholderColor = Color.Gray.copy(alpha = 0.7f),
+                    disabledTrailingIconColor = Color.Gray,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                singleLine = true,
+                enabled = onClick == null
+            )
+        }
     }
 }
 
@@ -405,8 +455,44 @@ private fun InsertAccountPlanScreenPreview() {
                 onDrawdownTypeSelected = {},
                 onMaxDrawdownChange = {},
                 onDailyLossLimitChange = {},
+                onDayStartingChange = {},
+                onDayBrokenChange = {},
                 onSaveClick = {}
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AccountPlanDatePicker(
+    initialDate: Date,
+    onDateSelected: (Date) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialDate.time
+    )
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        onDateSelected(Date(it))
+                    }
+                }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
     }
 }

@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +28,14 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
 
     fun onAccountNameChange(newValue: String) {
         _uiState.update { it.copy(accountName = newValue) }
+    }
+
+    fun onDayStartingChange(newValue: Date) {
+        _uiState.update { it.copy(dayStarting = newValue) }
+    }
+
+    fun onDayBrokenChange(newValue: Date?) {
+        _uiState.update { it.copy(dayBroken = newValue) }
     }
 
     fun onInitialBalanceChange(newValue: String) {
