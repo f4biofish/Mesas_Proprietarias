@@ -1,15 +1,20 @@
 package com.librarys.ferreira.core.ui.account_plan
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.librarys.ferreira.core.domain.model.config.PropFirmConfig
 import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
+import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.model.template.AccountPlan
+import com.librarys.ferreira.core.domain.usecase.account.InsertAccountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Date
 import java.util.Locale
@@ -17,7 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InsertAccountPlanViewModel @Inject constructor(
-
+    private val insertAccountUseCase: InsertAccountUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InsertAccountPlanUiState())
@@ -29,6 +34,11 @@ class InsertAccountPlanViewModel @Inject constructor(
         maximumFractionDigits = 2
     }
 
+    /**
+     * Efetua a formatação do valor para o campo formatado de moeda
+     * @param value valor a ser formatado
+     * @return a string formatada
+     */
     private fun formatToCurrency(value: String) : String {
         //Remove tudo que não for dpigito
         val cleanString = value.replace(Regex("[^\\d]"), "")
@@ -40,6 +50,16 @@ class InsertAccountPlanViewModel @Inject constructor(
         } catch (e: Exception){
             ""
         }
+    }
+
+    /**
+     * Converte o campo de string para o valor Double
+     * @param value valor a ser convertido
+     * @return o valor convertido
+     */
+    private fun parseCurrency(value: String) : Double {
+        val cleanString = value.replace(Regex("[^\\d]"), "")
+        return if (cleanString.isEmpty()) 0.0 else cleanString.toDouble() / 100
     }
 
 
@@ -114,12 +134,11 @@ class InsertAccountPlanViewModel @Inject constructor(
     }
 
     fun onDailyLossLimitChange(newValue: String) {
-        _uiState.update { it.copy(dailyLossLimit = newValue) }
+        _uiState.update { it.copy(dailyLossLimit = formatToCurrency(newValue)) }
     }
 
     fun onSaveClick() {
-        // TODO: Pendente a gravação do registro do plano
-        // Aqui você adicionará a lógica de salvamento futuramente (ex: chamar um Repository)
+        Timber.d("Iniciando cadastro de conta")
         _uiState.update { it.copy(isLoading = true) }
         val flag = validateRequiredFields()
         if(!flag) {
@@ -127,8 +146,35 @@ class InsertAccountPlanViewModel @Inject constructor(
             return
         }
 
-        // Simulação de salvamento
-        println("Salvando conta: ${_uiState.value.accountName}")
+        val state = _uiState.value
+
+        //Mapeamento para o objeto de domínio
+        val account = AccountInfo(
+            numberAccount = state.accountNumber,
+            propFirm = state.selectedPropFirm!!,
+            accountStage = state.selectedAccountStage!!,
+            accountName = state.accountName,
+            dayStarting = state.dayStarting,
+            dayBroken = state.dayBroken,
+            initialBalance = parseCurrency(state.initialBalance),
+            currentBalance = parseCurrency(state.currentBalance),
+            typeDrawdown = state.drawdownType!!,
+            maxDrawdownAmmount = parseCurrency(state.maxDrawdown),
+            dailyLossLimit = if (state.dailyLossLimit.isNotEmpty()) parseCurrency(state.dailyLossLimit) else null,
+            rulesPropFirm = state.rules
+        )
+
+        // Chamada ao UseCase via Coroutine
+        viewModelScope.launch {
+            insertAccountUseCase(account).fold(
+                onSuccess = {
+                    _uiState.update { it.copy(isLoading = false, isSaved = true) }
+                },
+                onFailure = { error ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
+                }
+            )
+        }
     }
 
     /**
@@ -163,6 +209,21 @@ class InsertAccountPlanViewModel @Inject constructor(
         //Validação do nome do plano da conta
         if(state.accountName.isEmpty()){
             updateMessageError("Selecione o plano da conta para cadastro")
+            return false
+        }
+
+        if (state.initialBalance.isEmpty()) {
+            updateMessageError("Informe o saldo inicial")
+            return false
+        }
+
+        if (state.drawdownType == null) {
+            updateMessageError("Selecione o tipo de drawdown")
+            return false
+        }
+
+        if (state.maxDrawdown.isEmpty()) {
+            updateMessageError("Informe o valor do drawdown máximo")
             return false
         }
 
