@@ -250,10 +250,10 @@ private fun InsertAccountPlanContent(
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(marginDefault)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange)
+                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange, prefix = "$")
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo atual", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.currentBalance, onValueChange = onCurrentBalanceChange)
+                        ItemTextFieldAccountPlan(label = "Saldo atual", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.currentBalance, onValueChange = onCurrentBalanceChange, prefix = "$")
                     }
                 }
             }
@@ -274,6 +274,7 @@ private fun InsertAccountPlanContent(
                     label = "Drawdown máximo permitido",
                     isRequired = true,
                     placeholder = "Ex.: 1000.00",
+                    prefix = "$",
                     value = uiState.maxDrawdown,
                     onValueChange = onMaxDrawdownChange
                 )
@@ -393,6 +394,7 @@ private fun ItemTextFieldAccountPlan(
     value: String = "",
     onValueChange: (String) -> Unit,
     readOnly: Boolean = false,
+    prefix: String? = null,
     trailingIcon: ImageVector? = null,
     onClick: (() -> Unit)? = null
 ) {
@@ -417,6 +419,16 @@ private fun ItemTextFieldAccountPlan(
                 placeholder = { if (placeholder != null) Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 trailingIcon = if (trailingIcon != null) { { Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray) } } else null,
                 shape = RoundedCornerShape(10.dp),
+                prefix = {
+                    if(!prefix.isNullOrEmpty()) {
+                        Text(
+                            text = prefix,
+                            color = Color.Gray.copy(alpha = 0.7f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f),
                     disabledBorderColor = Color.LightGray.copy(alpha = 0.6f),

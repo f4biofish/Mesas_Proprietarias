@@ -10,7 +10,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.text.NumberFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +20,26 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(InsertAccountPlanUiState())
     val uiState = _uiState.asStateFlow()
+
+
+    private val currencyFormatter = NumberFormat.getNumberInstance(Locale("pt", "BR")).apply {
+        minimumFractionDigits = 2
+        maximumFractionDigits = 2
+    }
+
+    private fun formatToCurrency(value: String) : String {
+        //Remove tudo que não for dpigito
+        val cleanString = value.replace(Regex("[^\\d]"), "")
+        if(cleanString.isEmpty()) return ""
+
+        return try {
+            val parsed = cleanString.toDouble() / 100
+            currencyFormatter.format(parsed)
+        } catch (e: Exception){
+            ""
+        }
+    }
+
 
     fun onAccountNumberChange(newValue: String) {
         Log.d("Teste", "onAccountNumberChange: Recebido o novo valor: $newValue")
@@ -40,10 +62,10 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
     fun onAccountPlanSelected(accountPlan: AccountPlan) {
         _uiState.update { it.copy(
             accountName = accountPlan.name,
-            initialBalance = accountPlan.initialBalance.toString(),
-            currentBalance = accountPlan.initialBalance.toString(), // Usually current balance starts as initial balance
+            initialBalance = currencyFormatter.format(accountPlan.initialBalance),
+            currentBalance = currencyFormatter.format(accountPlan.initialBalance), // Usually current balance starts as initial balance
             metaProfit = accountPlan.metaProfit?.toString() ?: "",
-            maxDrawdown = accountPlan.maxDrawdown.toString(),
+            maxDrawdown = currencyFormatter.format(accountPlan.maxDrawdown),
             dailyLossLimit = accountPlan.dailyLossLimit?.toString() ?: "",
             drawdownType = accountPlan.typeDrawdownChallenge, // Assuming we start with Challenge type
             rules = accountPlan.rulesChallenge
@@ -59,11 +81,11 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onInitialBalanceChange(newValue: String) {
-        _uiState.update { it.copy(initialBalance = newValue) }
+        _uiState.update { it.copy(initialBalance = formatToCurrency(newValue)) }
     }
 
     fun onCurrentBalanceChange(newValue: String) {
-        _uiState.update { it.copy(currentBalance = newValue) }
+        _uiState.update { it.copy(currentBalance = formatToCurrency(newValue)) }
     }
 
     fun onDrawdownTypeSelected(type: DrawnDownTypes) {
@@ -71,7 +93,7 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onMaxDrawdownChange(newValue: String) {
-        _uiState.update { it.copy(maxDrawdown = newValue) }
+        _uiState.update { it.copy(maxDrawdown = formatToCurrency(newValue)) }
     }
 
     fun onDailyLossLimitChange(newValue: String) {
