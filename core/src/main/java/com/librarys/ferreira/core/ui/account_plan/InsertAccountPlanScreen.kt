@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
+import com.librarys.ferreira.core.domain.model.template.AccountPlan
 import com.librarys.ferreira.core.ui.theme.AppTheme
 import com.librarys.ferreira.core.ui.theme.marginDefault
 import java.text.SimpleDateFormat
@@ -43,7 +44,7 @@ fun InsertAccountPlanScreen(
         onBackClick = onBackClick,
         onAccountNumberChange = viewModel::onAccountNumberChange,
         onPropFirmSelected = viewModel::onPropFirmSelected,
-        onAccountNameChange = viewModel::onAccountNameChange,
+        onAccountPlanSelected = viewModel::onAccountPlanSelected,
         onInitialBalanceChange = viewModel::onInitialBalanceChange,
         onCurrentBalanceChange = viewModel::onCurrentBalanceChange,
         onDrawdownTypeSelected = viewModel::onDrawdownTypeSelected,
@@ -62,7 +63,7 @@ private fun InsertAccountPlanContent(
     onBackClick: () -> Unit,
     onAccountNumberChange: (String) -> Unit,
     onPropFirmSelected: (PropFirm) -> Unit,
-    onAccountNameChange: (String) -> Unit,
+    onAccountPlanSelected: (AccountPlan) -> Unit,
     onInitialBalanceChange: (String) -> Unit,
     onCurrentBalanceChange: (String) -> Unit,
     onDrawdownTypeSelected: (DrawnDownTypes) -> Unit,
@@ -196,12 +197,17 @@ private fun InsertAccountPlanContent(
             }
 
             item {
-                ItemTextFieldAccountPlan(
-                    label = "Nome da conta",
+                ItemDropdownAccountPlan(
+                    label = "Nome do plano da conta",
                     isRequired = true,
-                    placeholder = "Ex.: My Evaluation 1",
-                    value = uiState.accountName,
-                    onValueChange = onAccountNameChange
+                    placeholder = if (uiState.selectedPropFirm == null) "Selecione primeiro a mesa" else "Selecione o plano",
+                    selectedOption = uiState.accountName,
+                    options = uiState.availableAccountPlans.map { it.name },
+                    onOptionSelected = { name ->
+                        uiState.availableAccountPlans.find { it.name == name }?.let {
+                            onAccountPlanSelected(it)
+                        }
+                    }
                 )
             }
 
@@ -449,7 +455,7 @@ private fun InsertAccountPlanScreenPreview() {
                 onBackClick = {},
                 onAccountNumberChange = {},
                 onPropFirmSelected = {},
-                onAccountNameChange = {},
+                onAccountPlanSelected = {},
                 onInitialBalanceChange = {},
                 onCurrentBalanceChange = {},
                 onDrawdownTypeSelected = {},

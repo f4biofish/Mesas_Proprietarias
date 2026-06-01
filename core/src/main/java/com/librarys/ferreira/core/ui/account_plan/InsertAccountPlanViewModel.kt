@@ -2,8 +2,10 @@ package com.librarys.ferreira.core.ui.account_plan
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.librarys.ferreira.core.domain.model.config.PropFirmConfig
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
+import com.librarys.ferreira.core.domain.model.template.AccountPlan
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,11 +25,28 @@ class InsertAccountPlanViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onPropFirmSelected(propFirm: PropFirm) {
-        _uiState.update { it.copy(selectedPropFirm = propFirm) }
+        val accounts = PropFirmConfig.getAccountsFor(propFirm)
+        _uiState.update { it.copy(
+            selectedPropFirm = propFirm,
+            availableAccountPlans = accounts,
+            accountName = "", // Reset account name when prop firm changes
+            initialBalance = "",
+            maxDrawdown = "",
+            dailyLossLimit = "",
+            drawdownType = null
+        ) }
     }
 
-    fun onAccountNameChange(newValue: String) {
-        _uiState.update { it.copy(accountName = newValue) }
+    fun onAccountPlanSelected(accountPlan: AccountPlan) {
+        _uiState.update { it.copy(
+            accountName = accountPlan.name,
+            initialBalance = accountPlan.initialBalance.toString(),
+            currentBalance = accountPlan.initialBalance.toString(), // Usually current balance starts as initial balance
+            maxDrawdown = accountPlan.maxDrawdown.toString(),
+            dailyLossLimit = accountPlan.dailyLossLimit?.toString() ?: "",
+            drawdownType = accountPlan.typeDrawdownChallenge, // Assuming we start with Challenge type
+            rules = accountPlan.rulesChallenge
+        ) }
     }
 
     fun onDayStartingChange(newValue: Date) {

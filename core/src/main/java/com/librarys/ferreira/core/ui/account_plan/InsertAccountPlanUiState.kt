@@ -3,6 +3,7 @@ package com.librarys.ferreira.core.ui.account_plan
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.rules.AccountRules
+import com.librarys.ferreira.core.domain.model.template.AccountPlan
 import java.util.Date
 
 /**
@@ -11,6 +12,7 @@ import java.util.Date
 data class InsertAccountPlanUiState(
     val accountNumber: String = "",
     val selectedPropFirm: PropFirm? = null,
+    val availableAccountPlans: List<AccountPlan> = emptyList(),
     val accountName: String = "",
     val dayStarting: Date = Date(),
     val dayBroken: Date? = null,
