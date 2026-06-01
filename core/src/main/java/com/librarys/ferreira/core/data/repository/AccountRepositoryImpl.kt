@@ -1,9 +1,12 @@
 package com.librarys.ferreira.core.data.repository
 
 import com.librarys.ferreira.core.data.local.dao.AccountDao
+import com.librarys.ferreira.core.data.mapper.toDomain
 import com.librarys.ferreira.core.data.mapper.toEntity
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.repository.AccountRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,6 +22,12 @@ class AccountRepositoryImpl @Inject constructor(
             registros > 0
         } catch (e: Exception){
             false
+        }
+    }
+
+    override fun getAccounts(): Flow<List<AccountInfo>> {
+        return accountDao.getAllAccounts().map { list ->
+            list.map { it.toDomain() }
         }
     }
 }

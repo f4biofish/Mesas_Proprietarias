@@ -1,6 +1,7 @@
 package com.librarys.ferreira.core.domain.repository
 
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
+import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
 
@@ -10,5 +11,11 @@ interface AccountRepository {
      * @return true se a conta foi salva com sucesso, false caso contrário
      */
     suspend fun saveAccountInDb(accountInfo: AccountInfo) : Boolean
+
+    /**
+     * Retorna o fluxo de todas as contas salvas no banco de dados
+     * @return Flow contendo a lista de contas
+     */
+    fun getAccounts(): Flow<List<AccountInfo>>
 
 }
