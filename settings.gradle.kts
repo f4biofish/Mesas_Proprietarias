@@ -20,5 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Mesas_Proprietarias"
-include(":app")
 include(":core")

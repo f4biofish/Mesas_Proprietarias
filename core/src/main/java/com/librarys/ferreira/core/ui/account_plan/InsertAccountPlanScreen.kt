@@ -1,5 +1,6 @@
 package com.librarys.ferreira.core.ui.account_plan
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,48 +13,67 @@ import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.ui.theme.AppTheme
 import com.librarys.ferreira.core.ui.theme.marginDefault
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
+
+@Composable
+fun InsertAccountPlanScreen(
+    viewModel: InsertAccountPlanViewModel = hiltViewModel(),
+    onBackClick: () -> Unit = {}
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    InsertAccountPlanContent(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onAccountNumberChange = viewModel::onAccountNumberChange,
+        onPropFirmSelected = viewModel::onPropFirmSelected,
+        onAccountNameChange = viewModel::onAccountNameChange,
+        onInitialBalanceChange = viewModel::onInitialBalanceChange,
+        onCurrentBalanceChange = viewModel::onCurrentBalanceChange,
+        onDrawdownTypeSelected = viewModel::onDrawdownTypeSelected,
+        onMaxDrawdownChange = viewModel::onMaxDrawdownChange,
+        onDailyLossLimitChange = viewModel::onDailyLossLimitChange,
+        onSaveClick = viewModel::onSaveClick
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InsertAccountPlanScreen(
-    onBackClick: () -> Unit = {},
-    onSaveClick: () -> Unit = {}
+private fun InsertAccountPlanContent(
+    uiState: InsertAccountPlanUiState,
+    onBackClick: () -> Unit,
+    onAccountNumberChange: (String) -> Unit,
+    onPropFirmSelected: (PropFirm) -> Unit,
+    onAccountNameChange: (String) -> Unit,
+    onInitialBalanceChange: (String) -> Unit,
+    onCurrentBalanceChange: (String) -> Unit,
+    onDrawdownTypeSelected: (DrawnDownTypes) -> Unit,
+    onMaxDrawdownChange: (String) -> Unit,
+    onDailyLossLimitChange: (String) -> Unit,
+    onSaveClick: () -> Unit
 ) {
-    // Estados para os campos da AccountInfo
-    var accountNumber by remember { mutableStateOf("") }
-    var selectedPropFirm by remember { mutableStateOf<PropFirm?>(null) }
-    var accountName by remember { mutableStateOf("") }
-    var dayStarting by remember { mutableStateOf(Date()) }
-    var dayBroken by remember { mutableStateOf<Date?>(null) }
-    var initialBalance by remember { mutableStateOf("") }
-    var currentBalance by remember { mutableStateOf("") }
-    var drawdownType by remember { mutableStateOf<DrawnDownTypes?>(null) }
-    var maxDrawdown by remember { mutableStateOf("") }
-    var dailyLossLimit by remember { mutableStateOf("") }
-
+    Log.d("Teste", "InsertAccountPlanContent: Iniciando")
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
     Scaffold(
         topBar = {
             Surface(
-                color = Color(0xFF0D1B3E), // Azul escuro do cabeçalho
+                color = Color(0xFF0D1B3E),
                 contentColor = Color.White
             ) {
                 Column(
@@ -94,18 +114,23 @@ fun InsertAccountPlanScreen(
             ) {
                 Button(
                     onClick = onSaveClick,
+                    enabled = !uiState.isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1D4ED8))
                 ) {
-                    Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Salvar Conta",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                    )
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                    } else {
+                        Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Salvar Conta",
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
                 }
             }
         }
@@ -124,8 +149,8 @@ fun InsertAccountPlanScreen(
                     label = "Número da conta",
                     isRequired = true,
                     placeholder = "Ex.: 1234567",
-                    value = accountNumber,
-                    onValueChange = { accountNumber = it }
+                    value = uiState.accountNumber,
+                    onValueChange = onAccountNumberChange
                 )
             }
 
@@ -134,9 +159,9 @@ fun InsertAccountPlanScreen(
                     label = "Mesa Proprietária (Prop Firm)",
                     isRequired = true,
                     placeholder = "Selecione a mesa proprietária",
-                    selectedOption = selectedPropFirm?.name,
+                    selectedOption = uiState.selectedPropFirm?.name,
                     options = PropFirm.entries.map { it.name },
-                    onOptionSelected = { selectedPropFirm = PropFirm.valueOf(it) }
+                    onOptionSelected = { onPropFirmSelected(PropFirm.valueOf(it)) }
                 )
             }
 
@@ -145,8 +170,8 @@ fun InsertAccountPlanScreen(
                     label = "Nome da conta",
                     isRequired = true,
                     placeholder = "Ex.: My Evaluation 1",
-                    value = accountName,
-                    onValueChange = { accountName = it }
+                    value = uiState.accountName,
+                    onValueChange = onAccountNameChange
                 )
             }
 
@@ -154,9 +179,9 @@ fun InsertAccountPlanScreen(
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(marginDefault)) {
                     Box(modifier = Modifier.weight(1f)) {
                         ItemTextFieldAccountPlan(
-                            label = "Data de início (Day Starting)",
+                            label = "Data de início",
                             isRequired = true,
-                            value = dateFormat.format(dayStarting),
+                            value = dateFormat.format(uiState.dayStarting),
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = Icons.Default.CalendarToday
@@ -164,9 +189,9 @@ fun InsertAccountPlanScreen(
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         ItemTextFieldAccountPlan(
-                            label = "Data de quebra (Day Broken)",
+                            label = "Data de quebra",
                             placeholder = "Selecione (opcional)",
-                            value = dayBroken?.let { dateFormat.format(it) } ?: "",
+                            value = uiState.dayBroken?.let { dateFormat.format(it) } ?: "",
                             onValueChange = {},
                             readOnly = true,
                             trailingIcon = Icons.Default.CalendarToday
@@ -178,10 +203,10 @@ fun InsertAccountPlanScreen(
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(marginDefault)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, placeholder = "Ex.: 10000.00", value = initialBalance, onValueChange = { initialBalance = it })
+                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange)
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo atual", isRequired = true, placeholder = "Ex.: 10000.00", value = currentBalance, onValueChange = { currentBalance = it })
+                        ItemTextFieldAccountPlan(label = "Saldo atual", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.currentBalance, onValueChange = onCurrentBalanceChange)
                     }
                 }
             }
@@ -191,9 +216,9 @@ fun InsertAccountPlanScreen(
                     label = "Tipo de Drawdown",
                     isRequired = true,
                     placeholder = "Selecione o tipo",
-                    selectedOption = drawdownType?.name,
+                    selectedOption = uiState.drawdownType?.name,
                     options = DrawnDownTypes.entries.map { it.name },
-                    onOptionSelected = { drawdownType = DrawnDownTypes.valueOf(it) }
+                    onOptionSelected = { onDrawdownTypeSelected(DrawnDownTypes.valueOf(it)) }
                 )
             }
 
@@ -202,17 +227,17 @@ fun InsertAccountPlanScreen(
                     label = "Drawdown máximo permitido",
                     isRequired = true,
                     placeholder = "Ex.: 1000.00",
-                    value = maxDrawdown,
-                    onValueChange = { maxDrawdown = it }
+                    value = uiState.maxDrawdown,
+                    onValueChange = onMaxDrawdownChange
                 )
             }
 
             item {
                 ItemTextFieldAccountPlan(
-                    label = "Limite de perda diária (Daily Loss Limit)",
+                    label = "Limite de perda diária",
                     placeholder = "Ex.: 500.00 (opcional)",
-                    value = dailyLossLimit,
-                    onValueChange = { dailyLossLimit = it }
+                    value = uiState.dailyLossLimit,
+                    onValueChange = onDailyLossLimitChange
                 )
             }
 
@@ -274,7 +299,7 @@ private fun ItemTextFieldAccountPlan(
             onValueChange = onValueChange,
             readOnly = readOnly,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { if (placeholder != null) Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f)) },
+            placeholder = { if (placeholder != null) Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis) },
             trailingIcon = if (trailingIcon != null) { { Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp), tint = Color.Gray) } } else null,
             shape = RoundedCornerShape(10.dp),
             colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f)),
@@ -299,22 +324,42 @@ private fun ItemDropdownAccountPlan(
             Text(text = label, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold, fontSize = 14.sp))
             if (isRequired) Text(text = "*", color = Color.Red, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
         }
-        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             OutlinedTextField(
                 value = selectedOption ?: "",
                 onValueChange = {},
                 readOnly = true,
                 placeholder = { Text(text = placeholder, color = Color.Gray.copy(alpha = 0.7f)) },
-                trailingIcon = { Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = Color.Gray) },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
                 shape = RoundedCornerShape(10.dp),
-                colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f))
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.LightGray.copy(alpha = 0.6f),
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface
+                ),
+                singleLine = true
             )
-            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
                 options.forEach { option ->
-                    DropdownMenuItem(text = { Text(option) }, onClick = { onOptionSelected(option); expanded = false })
+                    DropdownMenuItem(
+                        text = { Text(text = option) },
+                        onClick = {
+                            onOptionSelected(option)
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
                 }
             }
         }
@@ -344,13 +389,24 @@ private fun RuleItem(title: String, subtitle: String, icon: ImageVector, backgro
     }
 }
 
-
 @Preview
 @Composable
-private fun InsertAccountPlanScreen() {
-    AppTheme() {
+private fun InsertAccountPlanScreenPreview() {
+    AppTheme {
         Surface(color = MaterialTheme.colorScheme.surface) {
-            InsertAccountPlanScreen {  }
+            InsertAccountPlanContent(
+                uiState = InsertAccountPlanUiState(),
+                onBackClick = {},
+                onAccountNumberChange = {},
+                onPropFirmSelected = {},
+                onAccountNameChange = {},
+                onInitialBalanceChange = {},
+                onCurrentBalanceChange = {},
+                onDrawdownTypeSelected = {},
+                onMaxDrawdownChange = {},
+                onDailyLossLimitChange = {},
+                onSaveClick = {}
+            )
         }
     }
 }
