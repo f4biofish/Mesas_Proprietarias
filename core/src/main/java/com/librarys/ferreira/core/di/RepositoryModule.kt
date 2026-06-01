@@ -1,7 +1,9 @@
 package com.librarys.ferreira.core.di
 
 import com.librarys.ferreira.core.data.repository.AccountRepositoryImpl
+import com.librarys.ferreira.core.data.repository.TradesRepositoryImpl
 import com.librarys.ferreira.core.domain.repository.AccountRepository
+import com.librarys.ferreira.core.domain.repository.TradesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,6 +20,12 @@ abstract class RepositoryModule {
     abstract fun bindAccountRepository(
         accountRepositoryImpl: AccountRepositoryImpl
     ) : AccountRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTradesRepository(
+        tradesRepositoryImpl: TradesRepositoryImpl
+    ) : TradesRepository
 
 
 }
