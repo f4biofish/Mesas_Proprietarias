@@ -2,10 +2,13 @@ package com.librarys.ferreira.core.data.mapper
 
 import com.google.gson.Gson
 import com.librarys.ferreira.core.data.local.entities.AccountEntity
+import com.librarys.ferreira.core.data.local.entities.TradesEntity
 import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes
 import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
+import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
+import com.librarys.ferreira.core.domain.model.model.Trades
 import com.librarys.ferreira.core.domain.model.rules.AccountRules
 import java.util.Date
 
@@ -32,7 +35,6 @@ fun AccountEntity.toDomain() : AccountInfo {
     )
 }
 
-
 fun AccountInfo.toEntity() : AccountEntity {
     return AccountEntity(
         id = this.id,
@@ -50,5 +52,30 @@ fun AccountInfo.toEntity() : AccountEntity {
         rulesPropFirm = this.rulesPropFirm.map { rule ->
             gson.toJson(rule)
         }
+    )
+}
+
+fun TradesEntity.toDomain() : Trades {
+    return Trades(
+        id = this.id,
+        date = Date(this.date),
+        accountInfoId = this.accountInfoId,
+        accountNumber = this.accountNumber,
+        symbolAtivo = SymbolAtivo.valueOf(this.symbolAtivo),
+        contratos = this.contratos,
+        profit = this.profit
+    )
+}
+
+
+fun Trades.toEntity() : TradesEntity {
+    return TradesEntity(
+        id = this.id,
+        date = this.date.time,
+        accountInfoId = this.accountInfoId,
+        accountNumber = this.accountNumber,
+        symbolAtivo = this.symbolAtivo.name,
+        contratos = this.contratos,
+        profit = this.profit
     )
 }
