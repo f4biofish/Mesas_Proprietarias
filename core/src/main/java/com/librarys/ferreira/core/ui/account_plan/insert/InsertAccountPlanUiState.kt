@@ -1,4 +1,4 @@
-package com.librarys.ferreira.core.ui.account_plan
+package com.librarys.ferreira.core.ui.account_plan.insert
 
 import com.librarys.ferreira.core.domain.model.enums.AccountStage
 import com.librarys.ferreira.core.domain.model.enums.DrawnDownTypes

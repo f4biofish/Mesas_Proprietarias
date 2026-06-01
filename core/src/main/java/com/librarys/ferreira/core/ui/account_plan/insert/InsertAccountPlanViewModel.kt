@@ -1,4 +1,4 @@
-package com.librarys.ferreira.core.ui.account_plan
+package com.librarys.ferreira.core.ui.account_plan.insert
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

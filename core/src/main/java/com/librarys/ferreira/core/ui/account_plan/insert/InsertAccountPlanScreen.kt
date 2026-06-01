@@ -1,4 +1,4 @@
-package com.librarys.ferreira.core.ui.account_plan
+package com.librarys.ferreira.core.ui.account_plan.insert
 
 import android.widget.Toast
 import androidx.compose.foundation.background
