@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.librarys.ferreira.core.data.local.AppDatabase
 import com.librarys.ferreira.core.data.local.dao.AccountDao
+import com.librarys.ferreira.core.data.local.dao.TradesDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,5 +34,11 @@ object DatabaseModule {
     @Singleton
     fun provideAccountDao(db: AppDatabase): AccountDao {
         return db.accountDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTradesDao(db: AppDatabase): TradesDao {
+        return db.tradesDao()
     }
 }

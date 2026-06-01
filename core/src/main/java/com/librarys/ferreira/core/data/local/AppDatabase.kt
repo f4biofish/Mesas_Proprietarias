@@ -5,13 +5,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.librarys.ferreira.core.data.local.converters.Converters
 import com.librarys.ferreira.core.data.local.dao.AccountDao
+import com.librarys.ferreira.core.data.local.dao.TradesDao
 import com.librarys.ferreira.core.data.local.entities.AccountEntity
+import com.librarys.ferreira.core.data.local.entities.TradesEntity
 
-@Database(entities = [AccountEntity::class], version = 1, exportSchema = false)
+@Database(entities = [AccountEntity::class, TradesEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun accountDao(): AccountDao
+    abstract fun tradesDao() : TradesDao
 
     companion object {
         const val DATABASE_NAME = "mesas_proprietarias_db"
