@@ -1,11 +1,14 @@
 package com.librarys.ferreira.core.ui.account_plan.detail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
@@ -41,7 +44,8 @@ import java.util.*
 fun AccountDetailScreen(
     viewModel: AccountDetailViewModel = hiltViewModel(),
     onBackClick: () -> Unit = {},
-    onAddTradeClick: () -> Unit = {}
+    onAddTradeClick: () -> Unit = {},
+    onEditTradeClick: (Trades) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -49,7 +53,9 @@ fun AccountDetailScreen(
         uiState = uiState,
         onBackClick = onBackClick,
         onAddTradeClick = onAddTradeClick,
-        onTabSelected = viewModel::onTabSelected
+        onTabSelected = viewModel::onTabSelected,
+        onEditTradeClick = onEditTradeClick,
+        onDeleteTradeClick = viewModel::deleteTrade
     )
 }
 
@@ -67,7 +73,9 @@ private fun AccountDetailContent(
     uiState: AccountDetailUiState,
     onBackClick: () -> Unit,
     onAddTradeClick: () -> Unit,
-    onTabSelected: (Int) -> Unit
+    onTabSelected: (Int) -> Unit,
+    onEditTradeClick: (Trades) -> Unit,
+    onDeleteTradeClick: (Trades) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -142,7 +150,11 @@ private fun AccountDetailContent(
 
                     when (uiState.selectedTab) {
                         0 -> AccountInfoTab(uiState.account)
-                        1 -> TradesTab(uiState.trades)
+                        1 -> TradesTab(
+                            trades = uiState.trades,
+                            onEditTradeClick = onEditTradeClick,
+                            onDeleteTradeClick = onDeleteTradeClick
+                        )
                     }
                 }
             }
@@ -212,9 +224,16 @@ private fun AccountInfoTab(account: AccountInfo) {
 /**
  * Tela de Trades realizados
  * @param trades Lista de Trades
+ * @param onEditTradeClick Editar trade
+ * @param onDeleteTradeClick Excluir trade
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TradesTab(trades: List<Trades>) {
+private fun TradesTab(
+    trades: List<Trades>,
+    onEditTradeClick: (Trades) -> Unit,
+    onDeleteTradeClick: (Trades) -> Unit
+) {
     //Sem trades realizados
     if (trades.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -279,11 +298,81 @@ private fun TradesTab(trades: List<Trades>) {
                     TradeDailyItem(summary.date, summary.totalProfit, summary.tradeCount)
                 }
             } else {
-                items(sortedTrades) { trade ->
-                    TradeItem(trade)
+                items(
+                    items = sortedTrades,
+                    key = { it.id }
+                ) { trade ->
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = { value ->
+                            when (value) {
+                                SwipeToDismissBoxValue.StartToEnd -> {
+                                    onDeleteTradeClick(trade)
+                                    true
+                                }
+                                SwipeToDismissBoxValue.EndToStart -> {
+                                    onEditTradeClick(trade)
+                                    false // Não some da tela, apenas abre a edição
+                                }
+                                SwipeToDismissBoxValue.Settled -> false
+                            }
+                        }
+                    )
+
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        backgroundContent = {
+                            SwipeBackground(dismissState)
+                        },
+                        content = {
+                            TradeItem(trade)
+                        }
+                    )
                 }
             }
 
+        }
+    }
+}
+
+/**
+ * Background para o swipe de exclusão e edição
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeBackground(dismissState: SwipeToDismissBoxState) {
+    val color = when (dismissState.dismissDirection) {
+        SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.errorContainer
+        SwipeToDismissBoxValue.EndToStart -> colorResource(R.color.positive_green).copy(alpha = 0.2f)
+        else -> Color.Transparent
+    }
+
+    val direction = dismissState.dismissDirection
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 4.dp)
+            .background(color, RoundedCornerShape(8.dp)),
+        contentAlignment = when (direction) {
+            SwipeToDismissBoxValue.StartToEnd -> Alignment.CenterStart
+            SwipeToDismissBoxValue.EndToStart -> Alignment.CenterEnd
+            else -> Alignment.Center
+        }
+    ) {
+        if (direction == SwipeToDismissBoxValue.StartToEnd) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.excluir),
+                modifier = Modifier.padding(start = 16.dp),
+                tint = MaterialTheme.colorScheme.error
+            )
+        } else if (direction == SwipeToDismissBoxValue.EndToStart) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = stringResource(R.string.editar),
+                modifier = Modifier.padding(end = 16.dp),
+                tint = colorResource(R.color.positive_green)
+            )
         }
     }
 }
@@ -489,7 +578,9 @@ private fun AccountDetailTabTradesPreview() {
                     profit = -120.0,
                     date = Date()
                 )
-            )
+            ),
+            onEditTradeClick = {},
+            onDeleteTradeClick = {}
         )
     }
 }
@@ -534,7 +625,9 @@ private fun AccountDetailPreview() {
             ),
             onBackClick = {},
             onAddTradeClick = {},
-            onTabSelected = {}
+            onTabSelected = {},
+            onEditTradeClick = {},
+            onDeleteTradeClick = {}
         )
     }
 }

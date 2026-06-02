@@ -16,4 +16,18 @@ interface TradesRepository {
      * @return Flow contendo a lista de trades
      */
     fun getTradesByAccountId(accountId: String): kotlinx.coroutines.flow.Flow<List<Trades>>
+
+    /**
+     * Retorna um trade específico através do seu ID
+     * @param tradeId ID do trade
+     * @return O trade ou null se não encontrado
+     */
+    suspend fun getTradeById(tradeId: String): Trades?
+
+    /**
+     * Exclui um trade do banco de dados
+     * @param trade Dados do trade a ser excluído
+     * @return true se o trade foi excluído com sucesso, false caso contrário
+     */
+    suspend fun deleteTrade(trade: Trades): Boolean
 }

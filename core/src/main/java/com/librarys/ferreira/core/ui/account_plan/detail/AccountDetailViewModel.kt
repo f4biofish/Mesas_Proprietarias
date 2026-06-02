@@ -3,7 +3,11 @@ package com.librarys.ferreira.core.ui.account_plan.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.librarys.ferreira.core.domain.model.config.AtivosConfig
+import com.librarys.ferreira.core.domain.model.model.Trades
+import com.librarys.ferreira.core.domain.repository.AccountRepository
 import com.librarys.ferreira.core.domain.usecase.account.GetAccountByIdUseCase
+import com.librarys.ferreira.core.domain.usecase.trades.DeleteTradeUseCase
 import com.librarys.ferreira.core.domain.usecase.trades.GetTradesByAccountIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +23,8 @@ import javax.inject.Inject
 class AccountDetailViewModel @Inject constructor(
     private val getAccountByIdUseCase: GetAccountByIdUseCase,
     private val getTradesByAccountIdUseCase: GetTradesByAccountIdUseCase,
+    private val deleteTradeUseCase: DeleteTradeUseCase,
+    private val accountRepository: AccountRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -54,5 +60,31 @@ class AccountDetailViewModel @Inject constructor(
 
     fun onTabSelected(index: Int) {
         _uiState.update { it.copy(selectedTab = index) }
+    }
+
+    /**
+     * Exclui um trade selecionado e atualiza o saldo da conta
+     * @param trade Dados do trade a ser excluído
+     */
+    fun deleteTrade(trade: Trades) {
+        viewModelScope.launch {
+            val account = _uiState.value.account ?: return@launch
+
+            // Calcula o lucro líquido do trade (lucro bruto - custos) para estornar do saldo
+            val costPerContract = AtivosConfig.getCost(account.propFirm, trade.symbolAtivo)
+            val totalCost = costPerContract * trade.contratos
+            val netProfit = trade.profit - totalCost
+
+            val deleted = deleteTradeUseCase(trade)
+            if (deleted) {
+                // Atualiza o saldo da conta estornando o lucro líquido do trade deletado
+                val updatedAccount = account.copy(
+                    currentBalance = account.currentBalance - netProfit
+                )
+                accountRepository.updateAccount(updatedAccount)
+            } else {
+                _uiState.update { it.copy(errorMessage = "Erro ao excluir o trade") }
+            }
+        }
     }
 }

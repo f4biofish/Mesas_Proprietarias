@@ -1,5 +1,6 @@
 package com.librarys.ferreira.core.ui.trades.insert
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.librarys.ferreira.core.domain.model.config.AtivosConfig
@@ -8,11 +9,13 @@ import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
 import com.librarys.ferreira.core.domain.model.model.Trades
 import com.librarys.ferreira.core.domain.repository.AccountRepository
 import com.librarys.ferreira.core.domain.repository.TradesRepository
+import com.librarys.ferreira.core.domain.usecase.trades.GetTradeByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -22,14 +25,46 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class InsertTradeViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val tradesRepository: TradesRepository
+    private val tradesRepository: TradesRepository,
+    private val getTradeByIdUseCase: GetTradeByIdUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(InsertTradeUiState())
+    private val tradeId: String? = savedStateHandle["tradeId"]
+    private var originalTrade: Trades? = null
+
+    private val _uiState = MutableStateFlow(InsertTradeUiState(tradeId = tradeId))
     val uiState: StateFlow<InsertTradeUiState> = _uiState.asStateFlow()
 
     init {
         loadAccounts()
+        loadTradeIfEditing()
+    }
+
+    private fun loadTradeIfEditing() {
+        tradeId?.let { id ->
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true) }
+                val trade = getTradeByIdUseCase(id)
+                if (trade != null) {
+                    originalTrade = trade
+                    // Busca a conta vinculada ao trade
+                    val account = accountRepository.getAccountById(trade.accountInfoId).first()
+                    _uiState.update {
+                        it.copy(
+                            selectedAccount = account,
+                            date = trade.date,
+                            symbolAtivo = trade.symbolAtivo,
+                            contratos = trade.contratos.toString(),
+                            profit = trade.profit.toString(),
+                            isLoading = false
+                        )
+                    }
+                } else {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = "Trade não encontrado") }
+                }
+            }
+        }
     }
 
     private fun loadAccounts() {
@@ -107,6 +142,7 @@ class InsertTradeViewModel @Inject constructor(
             val netProfit = profitDouble - totalCost
             
             val trade = Trades(
+                id = state.tradeId ?: java.util.UUID.randomUUID().toString(),
                 date = state.date,
                 accountInfoId = account.id,
                 accountNumber = account.numberAccount,
@@ -118,15 +154,26 @@ class InsertTradeViewModel @Inject constructor(
             val tradeSaved = tradesRepository.saveTradeInDb(trade)
             
             if (tradeSaved) {
+                // Se estiver editando, primeiro removemos o impacto do trade antigo
+                var balanceAdjustment = netProfit
+                originalTrade?.let { oldTrade ->
+                    val oldCostPerContract = AtivosConfig.getCost(account.propFirm, oldTrade.symbolAtivo)
+                    val oldTotalCost = oldCostPerContract * oldTrade.contratos
+                    val oldNetProfit = oldTrade.profit - oldTotalCost
+                    balanceAdjustment -= oldNetProfit
+                }
+
                 val updatedAccount = account.copy(
-                    currentBalance = account.currentBalance + netProfit
+                    currentBalance = account.currentBalance + balanceAdjustment
                 )
                 val accountUpdated = accountRepository.updateAccount(updatedAccount)
 
                 if (accountUpdated) {
                     _uiState.update { it.copy(isSaved = true, isLoading = false) }
                     delay(500L.milliseconds)
-                    _uiState.value = InsertTradeUiState()
+                    if (!state.isEditMode) {
+                        _uiState.value = InsertTradeUiState()
+                    }
                 } else {
                     _uiState.update { it.copy(errorMessage = "Erro ao atualizar o saldo da conta", isLoading = false) }
                 }

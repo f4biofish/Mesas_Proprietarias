@@ -61,4 +61,6 @@
     <string name="limite_diario_perda_de">Limite diário de perda de %s</string>
     <string name="nenhuma_regra_adicional">Nenhuma regra adicional configurada</string>
     <string name="acumular_por_dia">Acumular operações por dia</string>
+    <string name="excluir">Excluir</string>
+    <string name="editar">Editar</string>
 </resources>

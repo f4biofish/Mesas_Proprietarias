@@ -18,7 +18,7 @@ class TradesRepositoryImpl @Inject constructor(
     override suspend fun saveTradeInDb(trade: Trades): Boolean {
         return try {
             tradesDao.insertTrades(trade.toEntity()) > 0
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -26,6 +26,18 @@ class TradesRepositoryImpl @Inject constructor(
     override fun getTradesByAccountId(accountId: String): Flow<List<Trades>> {
         return tradesDao.getAllTradesByAccountId(accountId).map { list ->
             list.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun getTradeById(tradeId: String): Trades? {
+        return tradesDao.getTradeById(tradeId)?.toDomain()
+    }
+
+    override suspend fun deleteTrade(trade: Trades): Boolean {
+        return try {
+            tradesDao.deleteTrade(trade.toEntity()) > 0
+        } catch (_: Exception) {
+            false
         }
     }
 

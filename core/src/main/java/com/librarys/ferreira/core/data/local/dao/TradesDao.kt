@@ -17,6 +17,9 @@ interface TradesDao {
     @Query("SELECT * FROM trades WHERE accountInfoId = :accountId")
     fun getAllTradesByAccountId(accountId: String) : Flow<List<TradesEntity>>
 
+    @Query("SELECT * FROM trades WHERE id = :tradeId")
+    suspend fun getTradeById(tradeId: String) : TradesEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrades(trades: TradesEntity) : Long
 

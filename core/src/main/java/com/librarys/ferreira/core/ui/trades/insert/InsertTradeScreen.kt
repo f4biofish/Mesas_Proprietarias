@@ -120,7 +120,7 @@ private fun InsertTradeContent(
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                         Text(
-                            text = "Novo Trade",
+                            text = if (uiState.isEditMode) "Editar Trade" else "Novo Trade",
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
@@ -128,7 +128,7 @@ private fun InsertTradeContent(
                         )
                     }
                     Text(
-                        text = "Registre os detalhes da sua operação",
+                        text = if (uiState.isEditMode) "Atualize os detalhes da sua operação" else "Registre os detalhes da sua operação",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
@@ -163,7 +163,7 @@ private fun InsertTradeContent(
                         Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Salvar Trade",
+                            text = if (uiState.isEditMode) "Atualizar Trade" else "Salvar Trade",
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                         )
                     }

@@ -40,11 +40,23 @@ fun NavGraph() {
         ) {
             AccountDetailScreen(
                 onBackClick = { navController.popBackStack() },
-                onAddTradeClick = { navController.navigate("insert_trade") }
+                onAddTradeClick = { navController.navigate("insert_trade") },
+                onEditTradeClick = { trade ->
+                    navController.navigate("insert_trade?tradeId=${trade.id}")
+                }
             )
         }
 
-        composable("insert_trade") {
+        composable(
+            route = "insert_trade?tradeId={tradeId}",
+            arguments = listOf(
+                navArgument("tradeId") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) {
             InsertTradeScreen(
                 onBackClick = { navController.popBackStack() }
             )
