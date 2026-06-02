@@ -1,0 +1,2 @@
+* v1.0.4-fix-corrigindo-bug-rules
+    -> Correção de bug ao criar uma nova conta que não esta armazenando a lista de regras para o plano selecionado

@@ -246,17 +246,6 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemDropdownAccountPlan(
-                    label = stringResource(R.string.estagio_conta),
-                    isRequired = true,
-                    placeholder = stringResource(R.string.selecione_estagio ),
-                    selectedOption = uiState.selectedAccountStage?.name,
-                    options = AccountStage.entries.map { it.name },
-                    onOptionSelected = { onAccountStageSelected(AccountStage.valueOf(it)) }
-                )
-            }
-
-            item {
-                ItemDropdownAccountPlan(
                     label = stringResource(R.string.nome_plano_conta),
                     isRequired = true,
                     placeholder = if (uiState.selectedPropFirm == null) stringResource(R.string.selecione_primeiro_mesa) else stringResource(R.string.selecione_plano),
@@ -267,6 +256,17 @@ private fun InsertAccountPlanContent(
                             onAccountPlanSelected(it)
                         }
                     }
+                )
+            }
+
+            item {
+                ItemDropdownAccountPlan(
+                    label = stringResource(R.string.estagio_conta),
+                    isRequired = true,
+                    placeholder = stringResource(R.string.selecione_estagio ),
+                    selectedOption = uiState.selectedAccountStage?.name,
+                    options = AccountStage.entries.map { it.name },
+                    onOptionSelected = { onAccountStageSelected(AccountStage.valueOf(it)) }
                 )
             }
 

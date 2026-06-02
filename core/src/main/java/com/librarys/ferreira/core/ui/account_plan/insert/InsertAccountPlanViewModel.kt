@@ -81,17 +81,22 @@ class InsertAccountPlanViewModel @Inject constructor(
     }
 
     fun onAccountPlanSelected(accountPlan: AccountPlan) {
+        val currentName = accountPlan.name
+        val currentPropFirm = accountPlan.propFirm
+
+        val plan = PropFirmConfig.getAccountsFor(currentPropFirm).find { it.name == currentName }
+
         _uiState.update { it.copy(
             accountName = accountPlan.name,
-            selectedAccountStage = AccountStage.CHALLENGE,
+            selectedAccountStage = if(_uiState.value.selectedAccountStage == null) AccountStage.CHALLENGE else _uiState.value.selectedAccountStage,
             initialBalance = currencyFormatter.format(accountPlan.initialBalance),
             currentBalance = currencyFormatter.format(accountPlan.initialBalance), // Usually current balance starts as initial balance
             metaProfit = accountPlan.metaProfit?.toString() ?: "",
             maxDrawdown = currencyFormatter.format(accountPlan.maxDrawdown),
             dailyLossLimit = accountPlan.dailyLossLimit?.toString() ?: "",
             drawdownType = accountPlan.typeDrawdownChallenge, // Assuming we start with Challenge type
-            rules = accountPlan.rulesChallenge
-        ) }
+            rules = if(_uiState.value.selectedAccountStage == AccountStage.CHALLENGE) plan?.rulesChallenge ?: emptyList() else plan?.rulesFunded ?: emptyList())
+        }
     }
 
     fun onAccountStageSelected(stage: AccountStage) {
@@ -101,6 +106,8 @@ class InsertAccountPlanViewModel @Inject constructor(
         val plan = if (currentPropFirm != null) {
             PropFirmConfig.getAccountsFor(currentPropFirm).find { it.name == currentPlanName }
         } else null
+
+        Timber.d("Regras do plano selecionado: ${plan?.rulesChallenge} - ${plan?.rulesFunded}")
 
         _uiState.update { it.copy(
             selectedAccountStage = stage,
@@ -166,6 +173,7 @@ class InsertAccountPlanViewModel @Inject constructor(
 
         // Chamada ao UseCase via Coroutine
         viewModelScope.launch {
+            Timber.d("Regras da conta: ${state.rules}")
             insertAccountUseCase(account).fold(
                 onSuccess = {
                     _uiState.update { it.copy(isLoading = false, isSaved = true) }
