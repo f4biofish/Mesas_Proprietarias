@@ -29,4 +29,9 @@
     <string name="data_inicio">Data de Início</string>
     <string name="data_quebra">Data de Quebra</string>
     <string name="nenhum_trade_realizado">Nenhum trade realizado nesta conta</string>
+
+    <string name="filtro_todas">Todas</string>
+    <string name="filtro_ativas">Ativas</string>
+    <string name="filtro_quebradas">Quebradas</string>
+    <string name="total_contas">Total: %d contas</string>
 </resources>

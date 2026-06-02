@@ -44,7 +44,8 @@ fun ListAccountScreen(
     ListAccountContent(
         uiState = uiState,
         onAddAccountClick = onAddAccountClick,
-        onAccountClick = onAccountClick
+        onAccountClick = onAccountClick,
+        onFilterSelected = viewModel::onFilterSelected
     )
 }
 
@@ -52,7 +53,8 @@ fun ListAccountScreen(
 fun ListAccountContent(
     uiState: ListAccountUiState,
     onAddAccountClick: () -> Unit,
-    onAccountClick: (AccountInfo) -> Unit
+    onAccountClick: (AccountInfo) -> Unit,
+    onFilterSelected: (AccountFilter) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -92,31 +94,93 @@ fun ListAccountContent(
             ) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.adicionar_conta))
             }
+        },
+        bottomBar = {
+            Surface(
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp,
+                color = MaterialTheme.colorScheme.surfaceContainer
+            ) {
+                Text(
+                    text = stringResource(R.string.total_contas, uiState.filteredAccounts.size),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                )
+            }
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (uiState.accounts.isEmpty()) {
-                EmptyAccountsView(modifier = Modifier.align(Alignment.Center))
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(marginDefault),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(uiState.accounts) { account ->
-                        AccountItem(
-                            account = account,
-                            onClick = { onAccountClick(account) }
-                        )
+            FilterRow(
+                selectedFilter = uiState.selectedFilter,
+                onFilterSelected = onFilterSelected,
+                modifier = Modifier.padding(horizontal = marginDefault, vertical = 8.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else if (uiState.filteredAccounts.isEmpty()) {
+                    EmptyAccountsView(modifier = Modifier.align(Alignment.Center))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = marginDefault,
+                            end = marginDefault,
+                            top = 4.dp,
+                            bottom = 80.dp // Extra padding for FAB
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.filteredAccounts) { account ->
+                            AccountItem(
+                                account = account,
+                                onClick = { onAccountClick(account) }
+                            )
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterRow(
+    selectedFilter: AccountFilter,
+    onFilterSelected: (AccountFilter) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        AccountFilter.entries.forEach { filter ->
+            FilterChip(
+                selected = selectedFilter == filter,
+                onClick = { onFilterSelected(filter) },
+                label = {
+                    Text(
+                        text = when (filter) {
+                            AccountFilter.ALL -> stringResource(R.string.filtro_todas)
+                            AccountFilter.ACTIVE -> stringResource(R.string.filtro_ativas)
+                            AccountFilter.BROKEN -> stringResource(R.string.filtro_quebradas)
+                        }
+                    )
+                }
+            )
         }
     }
 }
@@ -229,36 +293,39 @@ private fun EmptyAccountsView(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun ListAccountPreview() {
+    val accounts = listOf(
+        AccountInfo(
+            numberAccount = "123456",
+            propFirm = PropFirm.TRADEIFY,
+            accountStage = AccountStage.CHALLENGE,
+            accountName = "Standard 50K",
+            initialBalance = 50000.0,
+            currentBalance = 51250.0,
+            typeDrawdown = DrawnDownTypes.TRAILING,
+            maxDrawdownAmmount = 2000.0,
+            rulesPropFirm = emptyList()
+        ),
+        AccountInfo(
+            numberAccount = "789012",
+            propFirm = PropFirm.YLOS_TRADING,
+            accountStage = AccountStage.FUNDED,
+            accountName = "Expert 100K",
+            initialBalance = 100000.0,
+            currentBalance = 98500.0,
+            typeDrawdown = DrawnDownTypes.EOD,
+            maxDrawdownAmmount = 3000.0,
+            rulesPropFirm = emptyList()
+        )
+    )
     AppTheme {
         ListAccountContent(
             uiState = ListAccountUiState(
-                accounts = listOf(
-                    AccountInfo(
-                        numberAccount = "123456",
-                        propFirm = PropFirm.TRADEIFY,
-                        accountStage = AccountStage.CHALLENGE,
-                        accountName = "Standard 50K",
-                        initialBalance = 50000.0,
-                        currentBalance = 51250.0,
-                        typeDrawdown = DrawnDownTypes.TRAILING,
-                        maxDrawdownAmmount = 2000.0,
-                        rulesPropFirm = emptyList()
-                    ),
-                    AccountInfo(
-                        numberAccount = "789012",
-                        propFirm = PropFirm.YLOS_TRADING,
-                        accountStage = AccountStage.FUNDED,
-                        accountName = "Expert 100K",
-                        initialBalance = 100000.0,
-                        currentBalance = 98500.0,
-                        typeDrawdown = DrawnDownTypes.EOD,
-                        maxDrawdownAmmount = 3000.0,
-                        rulesPropFirm = emptyList()
-                    )
-                )
+                accounts = accounts,
+                filteredAccounts = accounts
             ),
             onAddAccountClick = {},
-            onAccountClick = {}
+            onAccountClick = {},
+            onFilterSelected = {}
         )
     }
 }
@@ -270,7 +337,8 @@ private fun ListAccountEmptyPreview() {
         ListAccountContent(
             uiState = ListAccountUiState(),
             onAddAccountClick = {},
-            onAccountClick = {}
+            onAccountClick = {},
+            onFilterSelected = {}
         )
     }
 }
