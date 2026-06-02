@@ -18,12 +18,12 @@ interface TradesDao {
     fun getAllTradesByAccountId(accountId: String) : Flow<List<TradesEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertTrades(trades: TradesEntity) : Long
+    suspend fun insertTrades(trades: TradesEntity) : Long
 
     @Delete
-    fun deleteTrade(trade: TradesEntity) : Int
+    suspend fun deleteTrade(trade: TradesEntity) : Int
 
     @Query("DELETE FROM trades WHERE accountInfoId = :accountId")
-    fun deleteAllTradesByAccount(accountId: String) : Int
+    suspend fun deleteAllTradesByAccount(accountId: String) : Int
 
 }

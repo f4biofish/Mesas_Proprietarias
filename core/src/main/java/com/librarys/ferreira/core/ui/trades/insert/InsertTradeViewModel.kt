@@ -8,13 +8,16 @@ import com.librarys.ferreira.core.domain.model.model.Trades
 import com.librarys.ferreira.core.domain.repository.AccountRepository
 import com.librarys.ferreira.core.domain.repository.TradesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class InsertTradeViewModel @Inject constructor(
@@ -106,12 +109,17 @@ class InsertTradeViewModel @Inject constructor(
                 contratos = contratosInt,
                 profit = profitDouble
             )
+            Timber.d("Tentativa de cadastro de trade: $trade")
             
             val success = tradesRepository.saveTradeInDb(trade)
             
             if (success) {
+                Timber.d("Trade cadastrado")
                 _uiState.update { it.copy(isSaved = true, isLoading = false) }
+                delay(500L.milliseconds)
+                _uiState.value = InsertTradeUiState()
             } else {
+                Timber.e("Erro ao cadastrar trade")
                 _uiState.update { it.copy(errorMessage = "Erro ao salvar o trade", isLoading = false) }
             }
         }
