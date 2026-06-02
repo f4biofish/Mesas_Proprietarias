@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +28,7 @@ class ListAccountViewModel @Inject constructor(
     }
 
     private fun getAccounts() {
+        Timber.d("Iniciando busca de contas")
         viewModelScope.launch {
             getAccountsUseCase()
                 .onStart {
@@ -36,6 +38,7 @@ class ListAccountViewModel @Inject constructor(
                     _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
                 }
                 .collect { accounts ->
+                    Timber.d("Lista de contas cadastradas: ${accounts.size}")
                     _uiState.update {
                         it.copy(
                             isLoading = false,
