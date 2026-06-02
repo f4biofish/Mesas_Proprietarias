@@ -24,17 +24,20 @@ class ListAccountViewModel @Inject constructor(
     val uiState: StateFlow<ListAccountUiState> = _uiState.asStateFlow()
 
     init {
+        Timber.d("Iniciando busca de contas cadastradas")
         getAccounts()
     }
 
     private fun getAccounts() {
         Timber.d("Iniciando busca de contas")
         viewModelScope.launch {
-            getAccountsUseCase()
+            getAccountsUseCase.invoke()
                 .onStart {
+                    Timber.d("Atualizando loading para true")
                     _uiState.update { it.copy(isLoading = true) }
                 }
                 .catch { error ->
+                    Timber.e("Erro na busca das contas: ${error.message}")
                     _uiState.update { it.copy(isLoading = false, errorMessage = error.message) }
                 }
                 .collect { accounts ->

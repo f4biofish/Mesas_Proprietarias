@@ -10,6 +10,7 @@ import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
 import com.librarys.ferreira.core.domain.model.model.Trades
 import com.librarys.ferreira.core.domain.model.rules.AccountRules
+import timber.log.Timber
 import java.util.Date
 
 private val gson = Gson()
@@ -29,8 +30,21 @@ fun AccountEntity.toDomain() : AccountInfo {
         maxDrawdownAmmount = this.maxDrawdownAmmount,
         dailyLossLimit = this.dailyLossLimit,
         accountStage = AccountStage.valueOf(this.accountStage),
-        rulesPropFirm = rulesPropFirm.map { json ->
-            gson.fromJson(json, AccountRules::class.java)
+        rulesPropFirm = rulesPropFirm.mapNotNull { json ->
+            try {
+                when {
+                    json.contains("maxPercentage") ->
+                        gson.fromJson(json, AccountRules.ConsistencyRule::class.java)
+                    json.contains("minutesBefore") ->
+                        gson.fromJson(json, AccountRules.NewsRestrictionRule::class.java)
+                    json.contains("daysTrading") ->
+                        gson.fromJson(json, AccountRules.MinimumTradingDaysRule::class.java)
+                    else -> null
+                }
+            } catch (e: Exception) {
+                Timber.e("Erro na conversão de Account Rules: ${e.message}")
+                null
+            }
         }
     )
 }
