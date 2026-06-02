@@ -2,6 +2,7 @@ package com.librarys.ferreira.core.ui.trades.insert
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.librarys.ferreira.core.domain.model.config.AtivosConfig
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
 import com.librarys.ferreira.core.domain.model.model.Trades
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
@@ -100,22 +100,36 @@ class InsertTradeViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+
+            val account = state.selectedAccount
+            val costPerContract = AtivosConfig.getCost(account.propFirm, state.symbolAtivo)
+            val totalCost = costPerContract * contratosInt
+            val netProfit = profitDouble - totalCost
             
             val trade = Trades(
                 date = state.date,
-                accountInfoId = state.selectedAccount.id,
-                accountNumber = state.selectedAccount.numberAccount,
+                accountInfoId = account.id,
+                accountNumber = account.numberAccount,
                 symbolAtivo = state.symbolAtivo,
                 contratos = contratosInt,
                 profit = profitDouble
             )
 
-            val success = tradesRepository.saveTradeInDb(trade)
+            val tradeSaved = tradesRepository.saveTradeInDb(trade)
             
-            if (success) {
-                _uiState.update { it.copy(isSaved = true, isLoading = false) }
-                delay(500L.milliseconds)
-                _uiState.value = InsertTradeUiState()
+            if (tradeSaved) {
+                val updatedAccount = account.copy(
+                    currentBalance = account.currentBalance + netProfit
+                )
+                val accountUpdated = accountRepository.updateAccount(updatedAccount)
+
+                if (accountUpdated) {
+                    _uiState.update { it.copy(isSaved = true, isLoading = false) }
+                    delay(500L.milliseconds)
+                    _uiState.value = InsertTradeUiState()
+                } else {
+                    _uiState.update { it.copy(errorMessage = "Erro ao atualizar o saldo da conta", isLoading = false) }
+                }
             } else {
                 _uiState.update { it.copy(errorMessage = "Erro ao salvar o trade", isLoading = false) }
             }

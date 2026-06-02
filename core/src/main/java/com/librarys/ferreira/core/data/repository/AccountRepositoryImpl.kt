@@ -30,4 +30,14 @@ class AccountRepositoryImpl @Inject constructor(
             list.map { it.toDomain() }
         }
     }
+
+    override suspend fun updateAccount(accountInfo: AccountInfo): Boolean {
+        val accountEntity = accountInfo.toEntity()
+        return try {
+            accountDao.insertAccount(accountEntity)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

@@ -21,7 +21,7 @@ object AtivosConfig {
         )
     )
 
-    internal val costsAtivosMap = mapOf(
+    val costsAtivosMap = mapOf(
         (PropFirm.YLOS_TRADING to SymbolAtivo.MNQ) to 1.3,
         (PropFirm.YLOS_TRADING to SymbolAtivo.NQ) to 4.36,
         (PropFirm.YLOS_TRADING to SymbolAtivo.ES) to 4.36,
@@ -32,5 +32,9 @@ object AtivosConfig {
         (PropFirm.LUCID_TRADING to SymbolAtivo.NQ) to 3.50,
         (PropFirm.LUCID_TRADING to SymbolAtivo.ES) to 3.50,
     )
+
+    fun getCost(propFirm: PropFirm, symbol: SymbolAtivo): Double {
+        return costsAtivosMap[propFirm to symbol] ?: 0.0
+    }
 
 }

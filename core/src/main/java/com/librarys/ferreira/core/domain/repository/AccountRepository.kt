@@ -18,4 +18,11 @@ interface AccountRepository {
      */
     fun getAccounts(): Flow<List<AccountInfo>>
 
+    /**
+     * Atualiza os dados de uma conta de mesa proprietária no banco de dados
+     * @param accountInfo Dados da conta
+     * @return true se a conta foi atualizada com sucesso, false caso contrário
+     */
+    suspend fun updateAccount(accountInfo: AccountInfo): Boolean
+
 }
