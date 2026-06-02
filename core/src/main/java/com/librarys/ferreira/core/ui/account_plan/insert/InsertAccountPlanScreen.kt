@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,9 +47,10 @@ fun InsertAccountPlanScreen(
 
     val context = LocalContext.current
 
+    val textContaCadastrada = stringResource(R.string.conta_cadastrada)
     LaunchedEffect(uiState.isSaved) {
         if(uiState.isSaved){
-            Toast.makeText(context, "Conta cadastrada com sucesso!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, textContaCadastrada, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -161,7 +163,7 @@ private fun InsertAccountPlanContent(
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                         Text(
-                            text = "Nova Conta",
+                            text = stringResource(R.string.nova_conta),
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
@@ -169,7 +171,7 @@ private fun InsertAccountPlanContent(
                         )
                     }
                     Text(
-                        text = "Preencha os dados do plano da mesa proprietária",
+                        text = stringResource(R.string.preencha_dados_da_mesa),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
@@ -204,7 +206,7 @@ private fun InsertAccountPlanContent(
                         Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Salvar Conta",
+                            text = stringResource(R.string.salvar_conta),
                             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
                         )
                     }
@@ -223,9 +225,9 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemTextFieldAccountPlan(
-                    label = "Número da conta",
+                    label = stringResource(R.string.numero_conta),
                     isRequired = true,
-                    placeholder = "Ex.: 1234567",
+                    placeholder = stringResource(R.string.ex_num_conta),
                     value = uiState.accountNumber,
                     onValueChange = onAccountNumberChange
                 )
@@ -233,9 +235,9 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemDropdownAccountPlan(
-                    label = "Mesa Proprietária (Prop Firm)",
+                    label = stringResource(R.string.mesa_proprietaria_prop_firm),
                     isRequired = true,
-                    placeholder = "Selecione a mesa proprietária",
+                    placeholder = stringResource(R.string.selecione_mesa),
                     selectedOption = uiState.selectedPropFirm?.name,
                     options = PropFirm.entries.map { it.name },
                     onOptionSelected = { onPropFirmSelected(PropFirm.valueOf(it)) }
@@ -244,9 +246,9 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemDropdownAccountPlan(
-                    label = "Estágio da conta",
+                    label = stringResource(R.string.estagio_conta),
                     isRequired = true,
-                    placeholder = "Selecione o estágio",
+                    placeholder = stringResource(R.string.selecione_estagio ),
                     selectedOption = uiState.selectedAccountStage?.name,
                     options = AccountStage.entries.map { it.name },
                     onOptionSelected = { onAccountStageSelected(AccountStage.valueOf(it)) }
@@ -255,9 +257,9 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemDropdownAccountPlan(
-                    label = "Nome do plano da conta",
+                    label = stringResource(R.string.nome_plano_conta),
                     isRequired = true,
-                    placeholder = if (uiState.selectedPropFirm == null) "Selecione primeiro a mesa" else "Selecione o plano",
+                    placeholder = if (uiState.selectedPropFirm == null) stringResource(R.string.selecione_primeiro_mesa) else stringResource(R.string.selecione_plano),
                     selectedOption = uiState.accountName,
                     options = uiState.availableAccountPlans.map { it.name },
                     onOptionSelected = { name ->
@@ -283,8 +285,8 @@ private fun InsertAccountPlanContent(
                     }
                     Box(modifier = Modifier.weight(1f)) {
                         ItemTextFieldAccountPlan(
-                            label = "Data de quebra",
-                            placeholder = "Selecione (opcional)",
+                            label = stringResource(R.string.data_inicio),
+                            placeholder = stringResource(R.string.selecione_opcional),
                             value = uiState.dayBroken?.let { dateFormat.format(it) } ?: "",
                             onValueChange = {},
                             readOnly = true,
@@ -298,19 +300,19 @@ private fun InsertAccountPlanContent(
             item {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(marginDefault)) {
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo inicial", isRequired = true, readOnly = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange, prefix = "$")
+                        ItemTextFieldAccountPlan(label = stringResource(R.string.saldo_inicial), isRequired = true, readOnly = true, placeholder = "Ex.: 10000.00", value = uiState.initialBalance, onValueChange = onInitialBalanceChange, prefix = "$")
                     }
                     Box(modifier = Modifier.weight(1f)) {
-                        ItemTextFieldAccountPlan(label = "Saldo atual", isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.currentBalance, onValueChange = onCurrentBalanceChange, prefix = "$")
+                        ItemTextFieldAccountPlan(label = stringResource(R.string.saldo_atual), isRequired = true, placeholder = "Ex.: 10000.00", value = uiState.currentBalance, onValueChange = onCurrentBalanceChange, prefix = "$")
                     }
                 }
             }
 
             item {
                 ItemDropdownAccountPlan(
-                    label = "Tipo de Drawdown",
+                    label = stringResource(R.string.tipo_drawdown),
                     isRequired = true,
-                    placeholder = "Selecione o tipo",
+                    placeholder = stringResource(R.string.selecione_tipo),
                     selectedOption = uiState.drawdownType?.name,
                     options = DrawnDownTypes.entries.map { it.name },
                     onOptionSelected = { onDrawdownTypeSelected(DrawnDownTypes.valueOf(it)) }
@@ -319,7 +321,7 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemTextFieldAccountPlan(
-                    label = "Drawdown máximo permitido",
+                    label = stringResource(R.string.drawdown_maximo_permitido),
                     isRequired = true,
                     placeholder = "Ex.: 1000.00",
                     prefix = "$",
@@ -331,7 +333,7 @@ private fun InsertAccountPlanContent(
 
             item {
                 ItemTextFieldAccountPlan(
-                    label = "Limite de perda diária",
+                    label = stringResource(R.string.limite_perda_diaria),
                     placeholder = "Ex.: 500.00 (opcional)",
                     value = uiState.dailyLossLimit,
                     onValueChange = onDailyLossLimitChange
@@ -340,7 +342,7 @@ private fun InsertAccountPlanContent(
 
             item {
                 Text(
-                    text = "Regras da mesa proprietária",
+                    text = stringResource(R.string.regras_mesa),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -358,8 +360,8 @@ private fun InsertAccountPlanContent(
                     if (uiState.metaProfit.isNotEmpty()) {
                         rulesToDisplay.add {
                             RuleItem(
-                                title = "Meta de Lucro",
-                                subtitle = "Alcance o lucro de $${uiState.metaProfit}",
+                                title = stringResource(R.string.meta_lucro),
+                                subtitle = stringResource(R.string.alcance_o_lucro_de, uiState.metaProfit),
                                 icon = Icons.AutoMirrored.Filled.TrendingUp,
                                 backgroundColor = colorResource(R.color.rule_consistency_bg),
                                 iconColor = colorResource(R.color.rule_consistency_icon),
@@ -371,8 +373,8 @@ private fun InsertAccountPlanContent(
                     if (uiState.maxDrawdown.isNotEmpty()) {
                         rulesToDisplay.add {
                             RuleItem(
-                                title = "Perda Máxima",
-                                subtitle = "Limite total de perda de $${uiState.maxDrawdown}",
+                                title = stringResource(R.string.perda_maxima),
+                                subtitle = stringResource(R.string.limite_perda, uiState.maxDrawdown),
                                 icon = Icons.Default.Shield,
                                 backgroundColor = colorResource(R.color.rule_news_bg),
                                 iconColor = colorResource(R.color.rule_news_icon),
@@ -384,8 +386,8 @@ private fun InsertAccountPlanContent(
                     if (uiState.dailyLossLimit.isNotEmpty()) {
                         rulesToDisplay.add {
                             RuleItem(
-                                title = "Perda Diária Máxima",
-                                subtitle = "Limite diário de $${uiState.dailyLossLimit}",
+                                title = stringResource(R.string.perda_diaria),
+                                subtitle = stringResource(R.string.limite_diario_perda_de, uiState.dailyLossLimit),
                                 icon = Icons.Default.CalendarToday,
                                 backgroundColor = colorResource(R.color.rule_days_bg),
                                 iconColor = colorResource(R.color.rule_days_icon),
@@ -410,7 +412,7 @@ private fun InsertAccountPlanContent(
 
                     if (rulesToDisplay.isEmpty()) {
                         Text(
-                            text = "Nenhuma regra adicional configurada",
+                            text = stringResource(R.string.nenhuma_regra_adicional),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(16.dp)

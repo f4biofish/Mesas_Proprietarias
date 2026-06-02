@@ -12,6 +12,7 @@
     </string>
 
     <string name="numero_conta">Número da Conta</string>
+    <string name="ex_num_conta">Ex: 123456</string>
     <string name="detalhes_conta">Detalhes da Conta</string>
     <string name="informacoes">Informações</string>
     <string name="trades">Trades</string>
@@ -34,4 +35,29 @@
     <string name="filtro_ativas">Ativas</string>
     <string name="filtro_quebradas">Quebradas</string>
     <string name="total_contas">Total: %d contas</string>
+
+    <string name="conta_cadastrada">Conta cadastrada com sucesso!</string>
+    <string name="nova_conta">Nova Conta</string>
+    <string name="preencha_dados_da_mesa">
+        Preencha os dados do plano da mesa proprietária
+    </string>
+    <string name="salvar_conta">Salvar Conta</string>
+    <string name="mesa_proprietaria_prop_firm">Mesa Proprietária (Prop Firm)</string>
+    <string name="selecione_mesa">Selecione a mesa proprietária</string>
+    <string name="estagio_conta">Estágio da Conta</string>
+    <string name="selecione_estagio">Selecione o estágio da conta</string>
+    <string name="nome_plano_conta">Nome do plano da conta</string>
+    <string name="selecione_primeiro_mesa">Selecione primeiro a mesa</string>
+    <string name="selecione_plano">Selecione o plano</string>
+    <string name="selecione_opcional">Selecione (opcional)</string>
+    <string name="selecione_tipo">Selecione o tipo</string>
+    <string name="drawdown_maximo_permitido">Drawdown máximo permitido</string>
+    <string name="regras_mesa">Regras da mesa proprietária</string>
+    <string name="meta_lucro">Meta de Lucro</string>
+    <string name="alcance_o_lucro_de">Alcance o lucro de %s</string>
+    <string name="perda_maxima">Perda máxima</string>
+    <string name="limite_perda">Limite total de perda de %s</string>
+    <string name="perda_diaria">Perda Diária Máxima</string>
+    <string name="limite_diario_perda_de">Limite diário de perda de %s</string>
+    <string name="nenhuma_regra_adicional">Nenhuma regra adicional configurada</string>
 </resources>
