@@ -109,17 +109,14 @@ class InsertTradeViewModel @Inject constructor(
                 contratos = contratosInt,
                 profit = profitDouble
             )
-            Timber.d("Tentativa de cadastro de trade: $trade")
-            
+
             val success = tradesRepository.saveTradeInDb(trade)
             
             if (success) {
-                Timber.d("Trade cadastrado")
                 _uiState.update { it.copy(isSaved = true, isLoading = false) }
                 delay(500L.milliseconds)
                 _uiState.value = InsertTradeUiState()
             } else {
-                Timber.e("Erro ao cadastrar trade")
                 _uiState.update { it.copy(errorMessage = "Erro ao salvar o trade", isLoading = false) }
             }
         }
