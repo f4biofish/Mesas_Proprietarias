@@ -13,6 +13,9 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,9 +53,17 @@ fun AccountDetailScreen(
     )
 }
 
+//region Conteúdo da tela de detalhes da conta
+/**
+ * Screen principal da tela de detalhes da conta
+ * @param uiState Tela de detalhes da conta
+ * @param onBackClick Voltar para a tela anterior
+ * @param onAddTradeClick Adicionar novo trade
+ * @param onTabSelected Alterar a aba selecionada
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountDetailContent(
+private fun AccountDetailContent(
     uiState: AccountDetailUiState,
     onBackClick: () -> Unit,
     onAddTradeClick: () -> Unit,
@@ -138,9 +149,15 @@ fun AccountDetailContent(
         }
     }
 }
+//endregion
 
+//region Conteúdo da tela de detalhes da conta
+/**
+ * Tela de informações da conta
+ * @param account Dados da conta
+ */
 @Composable
-fun AccountInfoTab(account: AccountInfo) {
+private fun AccountInfoTab(account: AccountInfo) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US)
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -189,9 +206,16 @@ fun AccountInfoTab(account: AccountInfo) {
         }
     }
 }
+//endregion
 
+//region Conteúdo da tela de Trades
+/**
+ * Tela de Trades realizados
+ * @param trades Lista de Trades
+ */
 @Composable
-fun TradesTab(trades: List<Trades>) {
+private fun TradesTab(trades: List<Trades>) {
+    //Sem trades realizados
     if (trades.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
@@ -201,20 +225,86 @@ fun TradesTab(trades: List<Trades>) {
             )
         }
     } else {
+
+        var acumularFlag by remember { mutableStateOf(false) }
+
+        // Processamento dos dados para exibição
+        val sortedTrades = remember(trades) { trades.sortedByDescending { it.date } }
+
+        val dailySummaries = remember(sortedTrades, acumularFlag) {
+            if (acumularFlag) {
+                sortedTrades.groupBy {
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.date)
+                }.map { (_, group) ->
+                    DailyTradeSummary(
+                        date = group.first().date,
+                        totalProfit = group.sumOf { it.profit },
+                        tradeCount = group.size
+                    )
+                }
+            } else emptyList()
+        }
+
+        //Lista de Trades Realizados
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(trades.sortedByDescending { it.date }) { trade ->
-                TradeItem(trade)
+
+            //Acumular operações por dia
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = acumularFlag,
+                        onCheckedChange = {
+                            acumularFlag = it
+                        }
+                    )
+
+                    Text(
+                        text = stringResource(R.string.acumular_por_dia),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
+
+            if (acumularFlag) {
+                items(dailySummaries) { summary ->
+                    TradeDailyItem(summary.date, summary.totalProfit, summary.tradeCount)
+                }
+            } else {
+                items(sortedTrades) { trade ->
+                    TradeItem(trade)
+                }
+            }
+
         }
     }
 }
 
+/**
+ * Data class para resumo diário de trades
+ */
+private data class DailyTradeSummary(
+    val date: Date,
+    val totalProfit: Double,
+    val tradeCount: Int
+)
+//endregion
+
+//region Item da lista de trades
+/**
+ * Item da lista de trades
+ * @param trade Dados do trade realizado
+ */
 @Composable
-fun TradeItem(trade: Trades) {
+private fun TradeItem(trade: Trades) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US)
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
@@ -260,8 +350,69 @@ fun TradeItem(trade: Trades) {
     }
 }
 
+/**
+ * Item de resumo diário de trades
+ * @param date Data do dia
+ * @param totalProfit Lucro total do dia
+ * @param tradeCount Quantidade de operações no dia
+ */
 @Composable
-fun InfoCard(title: String, content: @Composable ColumnScope.() -> Unit) {
+private fun TradeDailyItem(date: Date, totalProfit: Double, tradeCount: Int) {
+    val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US)
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dayOfWeekFormatter = SimpleDateFormat("EEEE", Locale.getDefault())
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f))
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = dateFormatter.format(date),
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    text = dayOfWeekFormatter.format(date).replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = currencyFormatter.format(totalProfit),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = if (totalProfit >= 0) colorResource(R.color.positive_green) else MaterialTheme.colorScheme.error
+                    )
+                )
+                Text(
+                    text = "$tradeCount ${if (tradeCount > 1) "operações" else "operação"}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+//endregion
+
+//region Card de informações
+/**
+ * Card de informações
+ * @param title Titulo do card
+ * @param content Conteudo do card
+ */
+@Composable
+private fun InfoCard(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -281,9 +432,17 @@ fun InfoCard(title: String, content: @Composable ColumnScope.() -> Unit) {
         }
     }
 }
+//endregion
 
+//region Linha de informações
+/**
+ * Linha de informações
+ * @param label Label da linha
+ * @param value Valor da linha
+ * @param valueColor Cor do valor
+ */
 @Composable
-fun InfoRow(label: String, value: String, valueColor: Color = MaterialTheme.colorScheme.onSurface) {
+private fun InfoRow(label: String, value: String, valueColor: Color = MaterialTheme.colorScheme.onSurface) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -302,7 +461,41 @@ fun InfoRow(label: String, value: String, valueColor: Color = MaterialTheme.colo
         )
     }
 }
+//endregion
 
+//region preview aba trades
+/**
+ * Preview da aba de detalhes do trade
+ */
+@Preview
+@Composable
+private fun AccountDetailTabTradesPreview() {
+    AppTheme {
+        TradesTab(
+            trades = listOf(
+                Trades(
+                    accountInfoId = "1",
+                    accountNumber = "123456",
+                    symbolAtivo = SymbolAtivo.NQ,
+                    contratos = 2,
+                    profit = 450.0,
+                    date = Date()
+                ),
+                Trades(
+                    accountInfoId = "1",
+                    accountNumber = "123456",
+                    symbolAtivo = SymbolAtivo.ES,
+                    contratos = 1,
+                    profit = -120.0,
+                    date = Date()
+                )
+            )
+        )
+    }
+}
+//endregion
+
+//region Preview Account Details
 @Preview(showBackground = true)
 @Composable
 private fun AccountDetailPreview() {
@@ -345,3 +538,4 @@ private fun AccountDetailPreview() {
         )
     }
 }
+//endregion
