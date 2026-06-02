@@ -19,6 +19,13 @@ interface AccountRepository {
     fun getAccounts(): Flow<List<AccountInfo>>
 
     /**
+     * Retorna o fluxo de uma conta específica através do seu ID
+     * @param id ID da conta
+     * @return Flow contendo os dados da conta ou null se não encontrada
+     */
+    fun getAccountById(id: String): Flow<AccountInfo?>
+
+    /**
      * Atualiza os dados de uma conta de mesa proprietária no banco de dados
      * @param accountInfo Dados da conta
      * @return true se a conta foi atualizada com sucesso, false caso contrário

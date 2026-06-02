@@ -31,6 +31,10 @@ class AccountRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getAccountById(id: String): Flow<AccountInfo?> {
+        return accountDao.getAccountById(id).map { it?.toDomain() }
+    }
+
     override suspend fun updateAccount(accountInfo: AccountInfo): Boolean {
         val accountEntity = accountInfo.toEntity()
         return try {

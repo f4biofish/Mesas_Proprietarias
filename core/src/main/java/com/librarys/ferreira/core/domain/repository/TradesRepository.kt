@@ -9,4 +9,11 @@ interface TradesRepository {
      * @return true se o trade foi salvo com sucesso, false caso contrário
      */
     suspend fun saveTradeInDb(trade: Trades): Boolean
+
+    /**
+     * Retorna o fluxo de todos os trades vinculados a uma conta específica
+     * @param accountId ID da conta vinculada aos trades
+     * @return Flow contendo a lista de trades
+     */
+    fun getTradesByAccountId(accountId: String): kotlinx.coroutines.flow.Flow<List<Trades>>
 }

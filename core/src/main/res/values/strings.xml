@@ -10,4 +10,23 @@
     <string name="adicione_a_primeira_conta">
         Toque no botão + para adicionar sua primeira conta
     </string>
+
+    <string name="numero_conta">Número da Conta</string>
+    <string name="detalhes_conta">Detalhes da Conta</string>
+    <string name="informacoes">Informações</string>
+    <string name="trades">Trades</string>
+    <string name="resumo_financeiro">Resumo Financeiro</string>
+    <string name="saldo_inicial">Saldo Inicial</string>
+    <string name="saldo_atual">Saldo Atual</string>
+    <string name="lucro_prejuizo_total">Lucro/Prejuízo Total</string>
+    <string name="configuracoes_plano">Configurações do Plano</string>
+    <string name="mesa_proprietaria">Mesa Proprietária</string>
+    <string name="estagio">Estágio</string>
+    <string name="tipo_drawdown">Tipo de Drawdown</string>
+    <string name="max_drawdown">Máximo Drawdown</string>
+    <string name="limite_perda_diaria">Limite Perda Diária</string>
+    <string name="datas">Datas</string>
+    <string name="data_inicio">Data de Início</string>
+    <string name="data_quebra">Data de Quebra</string>
+    <string name="nenhum_trade_realizado">Nenhum trade realizado nesta conta</string>
 </resources>

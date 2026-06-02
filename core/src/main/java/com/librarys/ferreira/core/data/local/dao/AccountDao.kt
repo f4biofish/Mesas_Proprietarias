@@ -14,6 +14,9 @@ interface AccountDao {
     @Query("SELECT * FROM accounts")
     fun getAllAccounts(): Flow<List<AccountEntity>>
 
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    fun getAccountById(id: String): Flow<AccountEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAccount(account: AccountEntity) : Long
 
