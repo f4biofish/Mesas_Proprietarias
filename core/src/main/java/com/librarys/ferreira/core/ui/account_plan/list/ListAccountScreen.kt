@@ -9,12 +9,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,16 +47,23 @@ fun ListAccountScreen(
         uiState = uiState,
         onAddAccountClick = onAddAccountClick,
         onAccountClick = onAccountClick,
-        onFilterSelected = viewModel::onFilterSelected
+        onFilterSelected = viewModel::onFilterSelected,
+        onDeleteAccount = viewModel::onDeleteAccountClick,
+        onDeleteConfirm = viewModel::onDeleteConfirm,
+        onDeleteDismiss = viewModel::onDeleteDismiss
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListAccountContent(
     uiState: ListAccountUiState,
     onAddAccountClick: () -> Unit,
     onAccountClick: (AccountInfo) -> Unit,
-    onFilterSelected: (AccountFilter) -> Unit
+    onFilterSelected: (AccountFilter) -> Unit,
+    onDeleteAccount: (AccountInfo) -> Unit,
+    onDeleteConfirm: () -> Unit,
+    onDeleteDismiss: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -143,17 +152,78 @@ fun ListAccountContent(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(uiState.filteredAccounts) { account ->
-                            AccountItem(
-                                account = account,
-                                onClick = { onAccountClick(account) }
+                        items(
+                            items = uiState.filteredAccounts,
+                            key = { it.id }
+                        ) { account ->
+                            val dismissState = rememberSwipeToDismissBoxState(
+                                confirmValueChange = { value ->
+                                    if (value == SwipeToDismissBoxValue.StartToEnd) {
+                                        onDeleteAccount(account)
+                                        false // Return false to not dismiss immediately, let the dialog handle it
+                                    } else {
+                                        false
+                                    }
+                                }
+                            )
+
+                            SwipeToDismissBox(
+                                state = dismissState,
+                                backgroundContent = {
+                                    SwipeBackground(dismissState)
+                                },
+                                enableDismissFromEndToStart = false,
+                                content = {
+                                    AccountItem(
+                                        account = account,
+                                        onClick = { onAccountClick(account) }
+                                    )
+                                }
                             )
                         }
                     }
                 }
+
+                uiState.accountToDelete?.let { account ->
+                    DeleteAccountConfirmationDialog(
+                        accountName = account.accountName,
+                        onConfirm = onDeleteConfirm,
+                        onDismiss = onDeleteDismiss
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+private fun DeleteAccountConfirmationDialog(
+    accountName: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = stringResource(R.string.titulo_excluir_conta))
+        },
+        text = {
+            Text(text = stringResource(R.string.mensagem_excluir_conta, accountName))
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text(text = stringResource(R.string.confirmar))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.cancelar))
+            }
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -290,6 +360,32 @@ private fun EmptyAccountsView(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SwipeBackground(dismissState: SwipeToDismissBoxState) {
+    val color = when (dismissState.dismissDirection) {
+        SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.errorContainer
+        else -> Color.Transparent
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 4.dp)
+            .background(color, RoundedCornerShape(12.dp)),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.excluir),
+                modifier = Modifier.padding(start = 16.dp),
+                tint = MaterialTheme.colorScheme.error
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun ListAccountPreview() {
@@ -325,7 +421,10 @@ private fun ListAccountPreview() {
             ),
             onAddAccountClick = {},
             onAccountClick = {},
-            onFilterSelected = {}
+            onFilterSelected = {},
+            onDeleteAccount = {},
+            onDeleteConfirm = {},
+            onDeleteDismiss = {}
         )
     }
 }
@@ -338,7 +437,10 @@ private fun ListAccountEmptyPreview() {
             uiState = ListAccountUiState(),
             onAddAccountClick = {},
             onAccountClick = {},
-            onFilterSelected = {}
+            onFilterSelected = {},
+            onDeleteAccount = {},
+            onDeleteConfirm = {},
+            onDeleteDismiss = {}
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.librarys.ferreira.core.data.repository
 
 import com.librarys.ferreira.core.data.local.dao.AccountDao
+import com.librarys.ferreira.core.data.local.dao.TradesDao
 import com.librarys.ferreira.core.data.mapper.toDomain
 import com.librarys.ferreira.core.data.mapper.toEntity
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
@@ -12,7 +13,8 @@ import javax.inject.Singleton
 
 @Singleton
 class AccountRepositoryImpl @Inject constructor(
-    private val accountDao: AccountDao
+    private val accountDao: AccountDao,
+    private val tradesDao: TradesDao
 ) : AccountRepository {
 
     override suspend fun saveAccountInDb(accountInfo: AccountInfo): Boolean {
@@ -39,6 +41,16 @@ class AccountRepositoryImpl @Inject constructor(
         val accountEntity = accountInfo.toEntity()
         return try {
             accountDao.insertAccount(accountEntity)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    override suspend fun deleteAccount(accountInfo: AccountInfo): Boolean {
+        return try {
+            tradesDao.deleteAllTradesByAccount(accountInfo.id)
+            accountDao.deleteAccount(accountInfo.toEntity())
             true
         } catch (e: Exception) {
             false

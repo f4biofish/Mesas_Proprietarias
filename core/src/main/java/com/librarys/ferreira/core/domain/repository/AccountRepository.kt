@@ -32,4 +32,11 @@ interface AccountRepository {
      */
     suspend fun updateAccount(accountInfo: AccountInfo): Boolean
 
+    /**
+     * Exclui uma conta de mesa proprietária do banco de dados
+     * @param accountInfo Dados da conta a ser excluída
+     * @return true se a conta foi excluída com sucesso, false caso contrário
+     */
+    suspend fun deleteAccount(accountInfo: AccountInfo): Boolean
+
 }

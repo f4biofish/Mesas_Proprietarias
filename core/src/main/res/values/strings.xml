@@ -69,4 +69,9 @@
     <string name="maior_lucro_diario">Maior lucro diário</string>
     <string name="consistencia_atual">Consistência atual</string>
     <string name="lucro_necessario">Lucro necessário</string>
+
+    <string name="titulo_excluir_conta">Excluir Conta</string>
+    <string name="mensagem_excluir_conta">Tem certeza que deseja excluir a conta \"%s\"? Todos os trades vinculados a esta conta também serão excluídos. Esta ação não pode ser desfeita.</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cancelar">Cancelar</string>
 </resources>

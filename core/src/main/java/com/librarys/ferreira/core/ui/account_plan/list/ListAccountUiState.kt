@@ -7,7 +7,8 @@ data class ListAccountUiState(
     val filteredAccounts: List<AccountInfo> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val selectedFilter: AccountFilter = AccountFilter.ALL
+    val selectedFilter: AccountFilter = AccountFilter.ALL,
+    val accountToDelete: AccountInfo? = null
 )
 
 enum class AccountFilter {

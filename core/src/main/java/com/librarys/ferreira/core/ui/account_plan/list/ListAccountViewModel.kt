@@ -3,6 +3,7 @@ package com.librarys.ferreira.core.ui.account_plan.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.librarys.ferreira.core.domain.usecase.account.GetAccountsUseCase
+import com.librarys.ferreira.core.domain.usecase.account.DeleteAccountUseCase
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListAccountViewModel @Inject constructor(
-    private val getAccountsUseCase: GetAccountsUseCase
+    private val getAccountsUseCase: GetAccountsUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ListAccountUiState())
@@ -59,6 +61,31 @@ class ListAccountViewModel @Inject constructor(
                 selectedFilter = filter,
                 filteredAccounts = filterAccounts(it.accounts, filter)
             )
+        }
+    }
+
+    fun onDeleteAccountClick(account: AccountInfo) {
+        _uiState.update { it.copy(accountToDelete = account) }
+    }
+
+    fun onDeleteDismiss() {
+        _uiState.update { it.copy(accountToDelete = null) }
+    }
+
+    fun onDeleteConfirm() {
+        val account = _uiState.value.accountToDelete ?: return
+        viewModelScope.launch {
+            try {
+                val success = deleteAccountUseCase(account)
+                if (success) {
+                    Timber.d("Conta excluída com sucesso: ${account.accountName}")
+                    _uiState.update { it.copy(accountToDelete = null) }
+                } else {
+                    Timber.e("Falha ao excluir conta: ${account.accountName}")
+                }
+            } catch (e: Exception) {
+                Timber.e("Erro ao excluir conta: ${e.message}")
+            }
         }
     }
 
