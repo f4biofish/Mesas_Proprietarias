@@ -33,5 +33,12 @@ sealed class AccountRules {
     @Serializable
     data class MinimumTradingDaysRule(val daysTrading: Int, val daysWin: Int, val profitWin: Double) : AccountRules()
 
+    /**
+     * Regra da mediana
+     * @property description A perda em uma operação, não pode ser 5x maior que a mediana
+     */
+    @Serializable
+    data class MedianaRules(val description: String = "A perda em uma operação não deve ser 5x maior que a mediana") : AccountRules()
+
 
 }

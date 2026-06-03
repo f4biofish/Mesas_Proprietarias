@@ -36,7 +36,8 @@ object PropFirmConfig {
                     rulesFunded = listOf(
                         AccountRules.ConsistencyRule(description = "Regra de consistência de 40%", 40.0),
                         AccountRules.NewsRestrictionRule(minutesBefore = 2, minutesAfter = 2),
-                        AccountRules.MinimumTradingDaysRule(daysTrading = 10, daysWin = 7, profitWin = 50.0)
+                        AccountRules.MinimumTradingDaysRule(daysTrading = 10, daysWin = 7, profitWin = 50.0),
+                        AccountRules.MedianaRules()
                     )
                 ),
 
@@ -55,7 +56,8 @@ object PropFirmConfig {
                     rulesFunded = listOf(
                         AccountRules.ConsistencyRule(description = "Regra de consistência de 40%", 40.0),
                         AccountRules.NewsRestrictionRule(minutesBefore = 2, minutesAfter = 2),
-                        AccountRules.MinimumTradingDaysRule(daysTrading = 10, daysWin = 7, profitWin = 50.0)
+                        AccountRules.MinimumTradingDaysRule(daysTrading = 10, daysWin = 7, profitWin = 50.0),
+                        AccountRules.MedianaRules()
                     )
                 ),
 
@@ -74,7 +76,8 @@ object PropFirmConfig {
                     rulesFunded = listOf(
                         AccountRules.ConsistencyRule(description = "Regra de consistência de 40%", 40.0),
                         AccountRules.NewsRestrictionRule(minutesBefore = 2, minutesAfter = 2),
-                        AccountRules.MinimumTradingDaysRule(daysTrading = 10, daysWin = 7, profitWin = 50.0)
+                        AccountRules.MinimumTradingDaysRule(daysTrading = 10, daysWin = 7, profitWin = 50.0),
+                        AccountRules.MedianaRules()
                     )
                 ),
 
@@ -93,7 +96,8 @@ object PropFirmConfig {
                     rulesFunded = listOf(
                         AccountRules.ConsistencyRule(description = "Regra de consistência de 30%", 30.0),
                         AccountRules.NewsRestrictionRule(minutesBefore = 2, minutesAfter = 2),
-                        AccountRules.MinimumTradingDaysRule(daysTrading = 5, daysWin = 5, profitWin = 200.0)
+                        AccountRules.MinimumTradingDaysRule(daysTrading = 5, daysWin = 5, profitWin = 200.0),
+                        AccountRules.MedianaRules()
                     )
                 )
 
