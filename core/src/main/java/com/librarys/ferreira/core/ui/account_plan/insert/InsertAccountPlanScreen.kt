@@ -701,5 +701,14 @@ private fun getRuleInfo(rule: AccountRules): RuleUiInfo {
             backgroundColorRes = R.color.rule_days_bg,
             iconColorRes = R.color.rule_days_icon
         )
+        
+        is AccountRules.MedianaRules -> RuleUiInfo(
+            title = "Regra da Mediana",
+            description = "Uma operação perdedora, não deve ser 5x maior que a mediana das operações",
+            subtitle = "",
+            icon = Icons.Default.Close,
+            backgroundColorRes = R.color.rule_days_bg,
+            iconColorRes = R.color.rule_days_icon
+        )
     }
 }
