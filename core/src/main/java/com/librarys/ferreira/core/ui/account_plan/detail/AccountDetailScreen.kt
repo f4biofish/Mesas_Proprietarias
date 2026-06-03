@@ -35,6 +35,8 @@ import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
 import com.librarys.ferreira.core.domain.model.model.Trades
+import com.librarys.ferreira.core.ui.common.InfoCard
+import com.librarys.ferreira.core.ui.common.InfoRow
 import com.librarys.ferreira.core.ui.theme.AppTheme
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -163,7 +165,7 @@ private fun AccountDetailContent(
 }
 //endregion
 
-//region Conteúdo da tela de detalhes da conta
+//region Conteúdo de informações da conta
 /**
  * Tela de informações da conta
  * @param account Dados da conta
@@ -494,62 +496,8 @@ private fun TradeDailyItem(date: Date, totalProfit: Double, tradeCount: Int) {
 }
 //endregion
 
-//region Card de informações
-/**
- * Card de informações
- * @param title Titulo do card
- * @param content Conteudo do card
- */
-@Composable
-private fun InfoCard(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                ),
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-            content()
-        }
-    }
-}
-//endregion
-
 //region Linha de informações
-/**
- * Linha de informações
- * @param label Label da linha
- * @param value Valor da linha
- * @param valueColor Cor do valor
- */
-@Composable
-private fun InfoRow(label: String, value: String, valueColor: Color = MaterialTheme.colorScheme.onSurface) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = valueColor
-        )
-    }
-}
+
 //endregion
 
 //region preview aba trades
