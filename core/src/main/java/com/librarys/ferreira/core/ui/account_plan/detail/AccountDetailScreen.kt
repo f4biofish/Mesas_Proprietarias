@@ -35,6 +35,7 @@ import com.librarys.ferreira.core.domain.model.enums.PropFirm
 import com.librarys.ferreira.core.domain.model.model.AccountInfo
 import com.librarys.ferreira.core.domain.model.model.SymbolAtivo
 import com.librarys.ferreira.core.domain.model.model.Trades
+import com.librarys.ferreira.core.ui.account_plan.rule_consistency_info.RuleConsistencyInfoViewCard
 import com.librarys.ferreira.core.ui.common.InfoCard
 import com.librarys.ferreira.core.ui.common.InfoRow
 import com.librarys.ferreira.core.ui.theme.AppTheme
@@ -151,7 +152,7 @@ private fun AccountDetailContent(
                     }
 
                     when (uiState.selectedTab) {
-                        0 -> AccountInfoTab(uiState.account)
+                        0 -> AccountInfoTab(uiState.account, uiState.trades)
                         1 -> TradesTab(
                             trades = uiState.trades,
                             onEditTradeClick = onEditTradeClick,
@@ -171,7 +172,7 @@ private fun AccountDetailContent(
  * @param account Dados da conta
  */
 @Composable
-private fun AccountInfoTab(account: AccountInfo) {
+private fun AccountInfoTab(account: AccountInfo, trades: List<Trades>) {
     val currencyFormatter = NumberFormat.getCurrencyInstance(Locale.US)
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
@@ -218,6 +219,11 @@ private fun AccountInfoTab(account: AccountInfo) {
                 }
             }
         }
+
+        item {
+            RuleConsistencyInfoViewCard(accountInfo = account, trades = trades)
+        }
+
     }
 }
 //endregion

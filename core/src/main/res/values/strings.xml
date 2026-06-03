@@ -63,4 +63,10 @@
     <string name="acumular_por_dia">Acumular operações por dia</string>
     <string name="excluir">Excluir</string>
     <string name="editar">Editar</string>
+
+    <string name="regra_consistencia">Regra de Consistência</string>
+    <string name="consistencia_necessaria">Consistência Necessária</string>
+    <string name="maior_lucro_diario">Maior lucro diário</string>
+    <string name="consistencia_atual">Consistência atual</string>
+    <string name="lucro_necessario">Lucro necessário</string>
 </resources>
